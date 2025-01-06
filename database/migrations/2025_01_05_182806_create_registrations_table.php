@@ -16,6 +16,10 @@ return new class extends Migration
             $table->foreignId('participant_id')->constrained('users')->restrictOnDelete()->cascadeOnUpdate();;
             $table->foreignId('event_id')->constrained('events')->restrictOnDelete()->cascadeOnUpdate();;
             $table->timestamp('inscription_date');
+            $table->string('interests')->nullable();
+            $table->string('products_services')->nullable();
+            $table->integer('remaining_meetings')->nullable();
+            $table->string('image_path')->nullable();
         });
     }
 
