@@ -6,9 +6,9 @@ enum EventStatus:string {
 
 	case Registration = 'Inscripcion'; //Inscripción
 
-	case Promotion = 'Difusion'; //Difusión
-
 	case Matching = 'Matcheo'; //Matcheo
+
+	case Ended = 'Terminada'; //Terminada
 
 
 	/*public function canUpdate():bool{

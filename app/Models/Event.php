@@ -17,7 +17,8 @@ class Event extends Model {
 		'meeting_duration',
 		'time_between_meetings',
 		'inscription_end_date',
-		'promotion_end_date',
+		'matching_end_date',
+		'logo_path',
 	];
 
 	protected $casts = [
@@ -27,7 +28,7 @@ class Event extends Model {
         'meeting_duration' => 'datetime:H:i:s',
         'time_between_meetings' => 'datetime:H:i:s',
         'inscription_end_date' => 'datetime',
-        'promotion_end_date' => 'datetime',
+        'matching_end_date' => 'datetime',
         'status' => EventStatus::class,
 	];
 

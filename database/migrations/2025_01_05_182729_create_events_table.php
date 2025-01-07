@@ -17,18 +17,17 @@ return new class extends Migration
             $table->string('title');
             $table->string('description')->nullable();
             $table->string('logo_path')->nullable();
-            $table->string('image_path')->nullable();
             $table->date('date');
             $table->time('starts_at');
             $table->time('ends_at');
             $table->time('meeting_duration');
             $table->time('time_between_meetings');
             $table->timestamp('inscription_end_date');
-            $table->timestamp('promotion_end_date');
+            $table->timestamp('matching_end_date');
             $table->enum('status', [
                 EventStatus::Registration->value,
-                EventStatus::Promotion->value,
                 EventStatus::Matching->value,
+                EventStatus::Ended->value,
             ])->default(EventStatus::Registration->value);
             $table->timestamps();
         });

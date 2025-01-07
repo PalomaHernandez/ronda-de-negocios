@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('interests')->nullable();
             $table->string('products_services')->nullable();
             $table->integer('remaining_meetings')->nullable();
-            $table->string('image_path')->nullable();
         });
     }
 

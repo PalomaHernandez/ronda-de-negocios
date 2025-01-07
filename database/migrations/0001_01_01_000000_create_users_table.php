@@ -18,9 +18,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('activity')->nullable();
-            $table->string('company_name')->nullable();
             $table->string('location')->nullable();
             $table->string('website')->nullable();
+            $table->string('logo_path')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
