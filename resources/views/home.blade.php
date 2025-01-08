@@ -38,6 +38,17 @@
 
     <div class="container">
         <h1>Rondas Uns en Zul</h1>
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <!-- Tabla de eventos -->
         <table class="table table-striped">
@@ -93,11 +104,11 @@
                                 <label for="eventDate" class="form-label">Fecha</label>
                                 <input type="date" class="form-control" id="eventDate" name="date" required>
                             </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success" id="createEventButton">Crear</button>
+                            </div>
                         </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success" id="createEventButton">Crear</button>
                     </div>
                 </div>
             </div>
@@ -118,18 +129,18 @@
                                 <label for="eventTitleToDelete" class="form-label">Ingrese el título del evento</label>
                                 <input type="text" class="form-control" id="eventTitleToDelete" name="delete_title" required>
                             </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger" id="deleteEventButton">Eliminar</button>
+                            </div>
                         </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-danger" id="deleteEventButton">Eliminar</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
+    <!-- <script>
         // Mostrar error en el modal de crear evento
         document.getElementById('createEventButton').addEventListener('click', function() {
             var title = document.getElementById('eventTitle').value;
@@ -138,7 +149,7 @@
 
             // Si ya existe un evento con el mismo título, mostrar el mensaje de error
             fetch(`/events/create`, {
-                method: 'POST',
+                method: 'GET',
                 body: new FormData(document.getElementById('createEventForm')),
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
@@ -164,6 +175,6 @@
                 document.getElementById('deleteEventForm').submit();
             }
         });
-    </script>
+    </script> -->
 </body>
 </html>

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Patterns\State\Event\EventStatus;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class EventController extends Controller
 {
@@ -49,20 +51,25 @@ class EventController extends Controller
 */
 public function store(Request $request)
 {
-    
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'date' => 'required|date',
-    ]);
+    try {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255|unique:events,title',
+            'date' => 'required|date',
+        ]);
+    } catch (ValidationException $e) {
+        return redirect()->back()
+            ->withErrors($e->errors()) 
+            ->with('error', 'El título del evento ya está en uso. Por favor, elegí otro.');
+    }
 
-    
+    // Crear el evento si todo está correcto
     Event::create([
-        'title' => $request->title,
-        'date' => $request->date,
-        'status' => 'Registration',
+        'title' => $validated['title'],
+        'date' => $validated['date'],
+        'status' => EventStatus::Registration,
     ]);
 
-    return redirect()->route('home');
+    return redirect()->route('home')->with('success', 'Evento creado exitosamente.');
 }
 
     public function update(Request $request, $id)
