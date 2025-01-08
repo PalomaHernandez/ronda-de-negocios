@@ -18,12 +18,12 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('logo_path')->nullable();
             $table->date('date');
-            $table->time('starts_at');
-            $table->time('ends_at');
-            $table->time('meeting_duration');
-            $table->time('time_between_meetings');
-            $table->timestamp('inscription_end_date');
-            $table->timestamp('matching_end_date');
+            $table->time('starts_at')->nullable();
+            $table->time('ends_at')->nullable();
+            $table->time('meeting_duration')->nullable();
+            $table->time('time_between_meetings')->nullable();
+            $table->timestamp('inscription_end_date')->nullable();
+            $table->timestamp('matching_end_date')->nullable();
             $table->enum('status', [
                 EventStatus::Registration->value,
                 EventStatus::Matching->value,

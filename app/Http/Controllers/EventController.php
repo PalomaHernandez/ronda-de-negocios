@@ -11,7 +11,8 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::all();
-        return response()->json($events);
+        //return response()->json($events);
+        return view('home', compact('events'));
     }
 
     public function show($id)
@@ -24,7 +25,7 @@ class EventController extends Controller
 
         return response()->json($event);
     }
-
+/*
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -38,13 +39,31 @@ class EventController extends Controller
             'inscription_end_date' => 'nullable|date',
             'matching_end_date' => 'nullable|date',
             'logo_path' => 'nullable|string',
-            'status' => 'nullable|string',
+            'status' => 'required|string',
         ]);
 
         $event = Event::create($validatedData);
 
         return response()->json($event, 201);
     }
+*/
+public function store(Request $request)
+{
+    
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'date' => 'required|date',
+    ]);
+
+    
+    Event::create([
+        'title' => $request->title,
+        'date' => $request->date,
+        'status' => 'Registration',
+    ]);
+
+    return redirect()->route('home');
+}
 
     public function update(Request $request, $id)
     {
@@ -73,6 +92,7 @@ class EventController extends Controller
         return response()->json($event);
     }
 
+    /*
     public function destroy($id)
     {
         $event = Event::find($id);
@@ -85,4 +105,17 @@ class EventController extends Controller
 
         return response()->json(['message' => 'Event deleted successfully'], 200);
     }
+    */
+
+    public function destroy(Request $request)
+    {
+    $request->validate([
+        'delete_title' => 'required|string',
+    ]);
+
+    Event::where('title', $request->delete_title)->delete();
+
+    return redirect()->route('home');
+}
+
 }
