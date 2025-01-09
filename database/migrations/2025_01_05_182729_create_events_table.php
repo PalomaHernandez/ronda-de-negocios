@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('responsible_id')->constrained('users')->restrictOnDelete()->cascadeOnUpdate();;
             $table->string('title')->unique();
             $table->string('description')->nullable();
             $table->string('logo_path')->nullable();

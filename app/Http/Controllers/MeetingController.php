@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meeting;
+use App\Repositories\Interfaces\MeetingRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class MeetingController extends Controller
-{
+class MeetingController extends Controller{
+    public function __construct(private readonly MeetingRepository $repository){}
+    
     public function index()
     {
         $meetings = Meeting::with(['event', 'requester', 'receiver'])->get();

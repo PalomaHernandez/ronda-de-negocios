@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\Interfaces\UserRepository;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class UserController extends Controller
-{
+class UserController extends Controller{
+    public function __construct(private readonly UserRepository $repository){}
 
     public function index()
     {
-        $users = User::all(); 
-        return response()->json($users); 
+        $user = auth()->user();
+		if(request()->expectsJson()){
+			return response()->json($user);
+		}
+		return view('users.index', compact('user'));
     }
 
    
@@ -30,19 +34,12 @@ class UserController extends Controller
     
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
-            'name' => 'required|string',
-            'activity' => 'nullable|string',
-            'location' => 'nullable|string',
-            'website' => 'nullable|url',
-            'logo_path' => 'nullable|string',
-        ]);
-
-        $user = User::create($validatedData); 
-
-        return response()->json($user, 201); 
+        $user = $this->repository->create();
+		if(request()->expectsJson()){
+			return response()->json($user);
+		}
+		return view('users.index', compact('user'));
+ 
     }
 
     

@@ -19,6 +19,7 @@ class Event extends Model {
 		'inscription_end_date',
 		'matching_end_date',
 		'logo_path',
+        'responsible_id',
 	];
 
 	protected $casts = [
@@ -37,6 +38,12 @@ class Event extends Model {
             get: fn ($value) => Carbon::parse($value)->format('Y-m-d')
         );
     }
+
+    public function responsible()
+    {
+        return $this->belongsTo(User::class, 'responsible_id');
+    }
+
     protected function startsAt(): Attribute {
         return Attribute::make(
             get: fn ($value) => Carbon::parse($value)->format('H:i:s')

@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\Event;
+use App\Models\User;
+use App\Repositories\Interfaces\EventRepository;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
+use App\Patterns\State\Event\EventStatus;
+
+class EventRepositoryImpl implements EventRepository
+{
+    public function getAll():Collection|array{
+        return Event::all();
+    }
+    public function getById(int $id):Event|Model{
+        return Event::find($id);
+    }
+    public function create(array $data, User $responsible): void{
+        dump($responsible->id);
+        Event::create([
+            'title' => $data['title'],
+            'date' => $data['date'],
+            'status' => EventStatus::Registration,
+            'responsible_id' => $responsible->id,
+        ]);
+    }
+    public function update(int $id, array $data): void{}
+    public function delete(int $id): void{}
+
+    public function deleteByTitle(string $event_title): void{
+        Event::where('title', $event_title)->delete();
+    }
+
+    public function addFileToEvent(int $event_id, array $fileData): void{}
+    public function getFilesByEvent(int $event_id): void{}
+
+    public function deleteFileFromEvent(int $event_id): void{}
+}

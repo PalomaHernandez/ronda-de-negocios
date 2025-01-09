@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Registration;
+use App\Repositories\Interfaces\RegistrationRepository;
 use Illuminate\Http\Request;
 
-class RegistrationController extends Controller
-{
+class RegistrationController extends Controller {
+
+    public function __construct(private readonly RegistrationRepository $repository){}
+
     public function index()
     {
         $registrations = Registration::all();

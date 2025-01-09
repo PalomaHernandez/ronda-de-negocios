@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Patterns\State\Event\EventStatus;
+use App\Repositories\Interfaces\EventRepository;
+use App\Repositories\Interfaces\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
-class EventController extends Controller
-{
+class EventController extends Controller {
+
+    public function __construct(private readonly EventRepository $repository, private readonly UserRepository $userRepository){}
+
     public function index()
     {
-        $events = Event::all();
-        //return response()->json($events);
+        $events = $this->repository->getAll();
         return view('home', compact('events'));
     }
 
@@ -52,23 +55,50 @@ class EventController extends Controller
 public function store(Request $request)
 {
     try {
-        $validated = $request->validate([
+        $validated = request()->validate([
             'title' => 'required|string|max:255|unique:events,title',
             'date' => 'required|date',
+        ], [
+            'title.required' => 'El título del evento es obligatorio',
+            'title.unique' => 'El título del evento ya está en uso',
+            'date.required' => 'La fecha del evento es obligatoria',
+        ]);
+    
+        $userValidated = request()->validate([
+            'responsible_email' => 'required|email',
+            'responsible_password' => 'required|string|min:8|confirmed',
+        ], [
+            'responsible_email.required' => 'El mail del responsable es obligatorio',
+            'responsible_password.required' => 'La contraseña del responsable es obligatoria',
+            'responsible_password.confirmed' => 'La confirmación de la contraseña no coincide',
+            'responsible_password.min' => 'La contraseña debe tener mínimo 8 caracteres',
         ]);
     } catch (ValidationException $e) {
+        $errors = $e->errors();
+    
+        $translatedFields = [
+            'title' => 'Título',
+            'date' => 'Fecha',
+            'responsible_email' => 'Correo del Responsable',
+            'responsible_password' => 'Contraseña del Responsable',
+        ];
+    
+        $errorMessage = "Errores encontrados: ";
+        foreach ($errors as $field => $messages) {
+            $fieldName = $translatedFields[$field] ?? $field; 
+            $errorMessage .= ucfirst($fieldName) . ": " . implode(", ", $messages);
+        }
+    
         return redirect()->back()
-            ->withErrors($e->errors()) 
-            ->with('error', 'El título del evento ya está en uso. Por favor, elegí otro.');
+            ->withErrors($errors)
+            ->with('error', $errorMessage);
     }
+    
 
-    // Crear el evento si todo está correcto
-    Event::create([
-        'title' => $validated['title'],
-        'date' => $validated['date'],
-        'status' => EventStatus::Registration,
-    ]);
+    $responsible = $this->userRepository->createOrUpdateResponsible($userValidated);
 
+    $this->repository->create($validated, $responsible);
+    
     return redirect()->route('home')->with('success', 'Evento creado exitosamente.');
 }
 
@@ -116,13 +146,21 @@ public function store(Request $request)
 
     public function destroy(Request $request)
     {
-    $request->validate([
-        'delete_title' => 'required|string',
-    ]);
+        try {
+            $request->validate([
+                'delete_title' => 'required|string',
+            ]);    
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors()) 
+                ->with('error', 'Debe ingresar un titulo de evento válido.');
+        }
 
-    Event::where('title', $request->delete_title)->delete();
+        $this->repository->deleteByTitle(
+            $request->delete_title
+        );
 
-    return redirect()->route('home');
+    return redirect()->route('home')->with('success', 'Evento eliminado exitosamente.');
 }
 
 }
