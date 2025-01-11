@@ -5,11 +5,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 //use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 use Silber\Bouncer\Database\Concerns\HasRoles;
 
 class User extends Model {
 
-	use HasRoles;
+	use HasRoles, HasApiTokens;
 
 	protected $fillable = [
 		'email',
