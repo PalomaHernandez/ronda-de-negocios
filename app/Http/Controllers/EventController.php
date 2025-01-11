@@ -102,14 +102,8 @@ public function store(Request $request)
     return redirect()->route('home')->with('success', 'Evento creado exitosamente.');
 }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
-        $event = Event::find($id);
-
-        if (!$event) {
-            return response()->json(['message' => 'Event not found'], 404);
-        }
-
         $validatedData = $request->validate([
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -124,25 +118,11 @@ public function store(Request $request)
             'status' => 'nullable|string',
         ]);
 
-        $event->update($validatedData);
+        $this->repository->update($id, $validatedData);
 
-        return response()->json($event);
+        //return response()->json($event);
     }
 
-    /*
-    public function destroy($id)
-    {
-        $event = Event::find($id);
-
-        if (!$event) {
-            return response()->json(['message' => 'Event not found'], 404);
-        }
-
-        $event->delete();
-
-        return response()->json(['message' => 'Event deleted successfully'], 200);
-    }
-    */
 
     public function destroy(Request $request)
     {
@@ -160,7 +140,7 @@ public function store(Request $request)
             $request->delete_title
         );
 
-    return redirect()->route('home')->with('success', 'Evento eliminado exitosamente.');
-}
+        return redirect()->route('home')->with('success', 'Evento eliminado exitosamente.');
+    }
 
 }

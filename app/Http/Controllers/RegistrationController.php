@@ -13,7 +13,12 @@ class RegistrationController extends Controller {
 
     public function index()
     {
-        $registrations = Registration::all();
+        $registrations = $this->repository->getAll();
+
+        if(!$registrations){
+            return response()->json(['message' => 'There are no meetings.'], 404);
+        }
+
         return response()->json($registrations);
     }
 
@@ -33,45 +38,41 @@ class RegistrationController extends Controller {
         $validatedData = $request->validate([
             'participant_id' => 'required|exists:users,id',
             'event_id' => 'required|exists:events,id',
-            'inscription_date' => 'required|date',
+            'inscription_date' => 'required|date', //Fecha automatica en la bd
             'interests' => 'nullable|string',
             'products_services' => 'nullable|string',
             'remaining_meetings' => 'nullable|integer',
         ]);
 
-        $registration = Registration::create($validatedData);
+        $registration = $this->repository->create($validatedData);
 
         return response()->json($registration, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $registration = Registration::find($id);
-
-        if (!$registration) {
-            return response()->json(['message' => 'Registration not found'], 404);
-        }
-
         $validatedData = $request->validate([
             'interests' => 'nullable|string',
             'products_services' => 'nullable|string',
             'remaining_meetings' => 'nullable|integer',
         ]);
 
-        $registration->update($validatedData);
+        $registration = $this->repository->updateRegistration($id,$validatedData);
+
+        if (!$registration) {
+            return response()->json(['message' => 'Registration not found'], 404);
+        }
 
         return response()->json($registration);
     }
 
     public function destroy($id)
     {
-        $registration = Registration::find($id);
+        $isDeleted = $this->repository->deleteRegistration($id);
 
-        if (!$registration) {
+        if (!$isDeleted) {
             return response()->json(['message' => 'Registration not found'], 404);
         }
-
-        $registration->delete();
 
         return response()->json(['message' => 'Registration deleted successfully'], 200);
     }

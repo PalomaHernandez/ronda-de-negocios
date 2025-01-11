@@ -10,9 +10,9 @@ interface RegistrationRepository
 {
     public function getAll():Collection|array;
     public function getRegistrationsByEvent(int $event_id):Collection|array;
-    public function registerParticipant(int $participant_id):Collection|array;
+    public function create(array $data):Registration|Model;
     public function getById(int $id):Registration|Model;
-    //public function updateRegistration(int $id, array $data): void;
-    public function deleteRegistration(int $id): void;
+    public function updateRegistration(int $id, array $data):Registration|Model;
+    public function deleteRegistration(int $id): bool;
 
 }

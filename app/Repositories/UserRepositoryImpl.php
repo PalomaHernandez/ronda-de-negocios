@@ -47,26 +47,31 @@ class UserRepositoryImpl implements UserRepository {
 		} else {
 			$user->update(['password' => bcrypt($data['responsible_password'])]);
 		}
-
+		$user->assign('responsible');
 		return $user; 
 	}
 
 	//Validación para creación de usuario participante.
 	private function validateParticipant():array{
 		return request()->validate([
-			 'email' => 'required|email|unique:users,email',
+			'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
             'name' => 'required|string',
-            'activity' => 'nullable|string',
-            'location' => 'nullable|string',
-            'website' => 'nullable|url',
-            'logo_path' => 'nullable|string',
+            'activity' => 'required|string',
+            'location' => 'required|string',
+            'website' => 'required|url',
 		]);
 	}
 
 	public function update(int $id):User{
 		$user = $this->findById($id);
-		//$user->update($this->validate());
+		$validate = request()->validate([
+            'name' => 'required|string',
+            'activity' => 'required|string',
+            'location' => 'required|string',
+            'website' => 'required|url',
+		]);
+		$user->update($validate);
 		return $user->fresh();
 	}
 
@@ -74,16 +79,5 @@ class UserRepositoryImpl implements UserRepository {
 		return $this->findById($id)->delete();
 	}
 
-    public function addImage(int $participant_id, array $imageData):void{
-        
-    }
-
-    public function getImages(int $participant_id):Collection|array{
-        return [];
-    }
-
-    public function deleteImage(int $image_id): void{
-        
-    }
 
 }

@@ -5,8 +5,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 //use Illuminate\Foundation\Auth\User as Authenticatable;
+use Silber\Bouncer\Database\Concerns\HasRoles;
 
 class User extends Model {
+
+	use HasRoles;
 
 	protected $fillable = [
 		'email',
@@ -22,5 +25,17 @@ class User extends Model {
 		'password',
 		'remember_token',
 	];
+
+	/*
+	public function meetingsRequested()
+	{
+		return $this->hasMany(Meeting::class, 'requester_id');
+	}
+
+	public function meetingsReceived()
+	{
+		return $this->hasMany(Meeting::class, 'receiver_id');
+	}*/
+
 
 }

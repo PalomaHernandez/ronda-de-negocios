@@ -18,7 +18,6 @@ class EventRepositoryImpl implements EventRepository
         return Event::find($id);
     }
     public function create(array $data, User $responsible): void{
-        dump($responsible->id);
         Event::create([
             'title' => $data['title'],
             'date' => $data['date'],
@@ -26,8 +25,12 @@ class EventRepositoryImpl implements EventRepository
             'responsible_id' => $responsible->id,
         ]);
     }
-    public function update(int $id, array $data): void{}
-    public function delete(int $id): void{}
+    public function update(int $id, array $data): void{
+        $this->getById($id)->update($data);
+    }
+    public function delete(int $id): void{
+        $this->getById($id)->delete();
+    }
 
     public function deleteByTitle(string $event_title): void{
         Event::where('title', $event_title)->delete();

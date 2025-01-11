@@ -20,9 +20,4 @@ interface UserRepository {
 
 	public function destroy(int $id):?bool;
 
-    public function addImage(int $participant_id, array $imageData): void;
-    public function getImages(int $participant_id): Collection|array;
-
-    public function deleteImage(int $image_id): void;
-
 }

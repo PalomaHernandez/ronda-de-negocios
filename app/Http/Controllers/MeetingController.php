@@ -12,14 +12,18 @@ class MeetingController extends Controller{
     
     public function index()
     {
-        $meetings = Meeting::with(['event', 'requester', 'receiver'])->get();
+        $meetings = $this->repository->getAll();
+
+        if(!$meetings){
+            return response()->json(['message' => 'There are no meetings.'], 404);
+        }
 
         return response()->json($meetings);
     }
 
     public function show($id)
     {
-        $meeting = Meeting::with(['event', 'requester', 'receiver'])->find($id);
+        $meeting = $this->repository->getById($id);
 
         if (!$meeting) {
             return response()->json(['message' => 'Meeting not found'], 404);
@@ -41,39 +45,35 @@ class MeetingController extends Controller{
             'receiver_id' => 'required|exists:users,id',
         ]);
 
-        $meeting = Meeting::create($validatedData);
+        $meeting = $this->repository->create($validatedData);
 
         return response()->json($meeting, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $meeting = Meeting::find($id);
-
-        if (!$meeting) {
-            return response()->json(['message' => 'Meeting not found'], 404);
-        }
-
         $validatedData = $request->validate([
             'status' => 'nullable|string',
             'assigned_table' => 'nullable|string|max:50',
             'time' => 'nullable|date_format:Y-m-d H:i:s',
         ]);
 
-        $meeting->update($validatedData);
+       $meeting = $this->repository->updateMeeting($id,$validatedData);
+
+       if (!$meeting) {
+        return response()->json(['message' => 'Meeting not found'], 404);
+       }
 
         return response()->json($meeting);
     }
 
     public function destroy($id)
     {
-        $meeting = Meeting::find($id);
+        $isDeleted = $this->repository->deleteMeeting($id);
 
-        if (!$meeting) {
+        if (!$isDeleted) {
             return response()->json(['message' => 'Meeting not found'], 404);
         }
-
-        $meeting->delete();
 
         return response()->json(['message' => 'Meeting deleted successfully'], 200);
     }
