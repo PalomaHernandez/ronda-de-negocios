@@ -1,43 +1,72 @@
-<div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createEventModalLabel">Crear Evento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal Crear Evento -->
+<div id="createEventModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
+        <!-- Botón de cierre en la esquina superior derecha -->
+        <button
+            onclick="closeModal('createEventModal')"
+            class="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        >
+            ✖
+        </button>
+
+        <h2 class="text-xl font-bold mb-4">Crear Evento</h2>
+        <form action="{{ route('events.create') }}" method="POST">
+            @csrf
+            <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Título</label>
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    required
+                    class="w-full border-gray-300 rounded mt-1"
+                />
             </div>
-            <div class="modal-body">
-                <form id="createEventForm" action="{{ route('events.create') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="eventTitle" class="form-label">Título del Evento</label>
-                        <input type="text" class="form-control" id="eventTitle" name="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="eventDate" class="form-label">Fecha</label>
-                        <input type="date" class="form-control" id="eventDate" name="date" required>
-                    </div>
-                    <hr class="my-4">
-                    <div class="p-3 border rounded">
-                        <h6>Asignar Responsable</h6>
-                        <div class="mb-3">
-                            <label for="responsibleEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="responsibleEmail" name="responsible_email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="responsiblePassword" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="responsiblePassword" name="responsible_password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
-                            <input type="password" class="form-control" id="confirmPassword" name="responsible_password_confirmation" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success" id="createEventButton">Crear</button>
-                    </div>
-                </form>
+            <div class="mb-4">
+                <label for="date" class="block text-sm font-medium text-gray-700">Fecha</label>
+                <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    required
+                    class="w-full border-gray-300 rounded mt-1"
+                />
             </div>
-        </div>
+            <div class="flex justify-end">
+                <!-- Botón Cancelar -->
+                <button
+                    type="button"
+                    onclick="closeModal('createEventModal')"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2"
+                >
+                    Cancelar
+                </button>
+                <!-- Botón Crear -->
+                <button
+                    type="submit"
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                >
+                    Crear
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+    // Función para abrir el modal
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    // Función para cerrar el modal
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+</script>

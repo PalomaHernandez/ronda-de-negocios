@@ -19,6 +19,16 @@ class EventController extends Controller {
         $events = $this->repository->getAll();
         return view('home', compact('events'));
     }
+
+    public function createEventModal()
+    {
+        return view('modals.create-event');
+    }
+
+    public function deleteEventModal()
+    {
+        return view('modals.delete-event');
+    }
 /*
     public function show($id)
     {
