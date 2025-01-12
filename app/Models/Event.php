@@ -64,10 +64,4 @@ class Event extends Model {
         return $this->hasMany(File::class);
     }
 
-    public function status():Attribute {
-		return Attribute::make(
-            get: fn () => EventStatus::from($this->attributes['status'])
-        );
-	}
-
 }

@@ -19,7 +19,7 @@ class EventController extends Controller {
         $events = $this->repository->getAll();
         return view('home', compact('events'));
     }
-
+/*
     public function show($id)
     {
         $event = Event::find($id);
@@ -30,6 +30,18 @@ class EventController extends Controller {
 
         return response()->json($event);
     }
+*/
+public function showByName($name)
+{
+    $event = Event::where('title', $name)->first();
+
+    if (!$event) {
+        return response()->json(['message' => 'Event not found'], 404);
+    }
+
+    return response()->json($event);
+}
+
 /*
     public function store(Request $request)
     {
