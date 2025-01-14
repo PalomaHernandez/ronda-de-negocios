@@ -5,12 +5,36 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller {
 
 	public function index(){
 		return view('auth.login');
 	}
+
+	public function login(Request $request)
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    if (!Auth::attempt($credentials)) {
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+        Log::info('Authenticated User:', ['user' => Auth::user()]);
+    $user = Auth::user();
+    $token = $user->createToken('API Token')->plainTextToken;
+	Log::info('Session middleware is active:',['token' => $token]);
+
+    return response()->json([
+        'user' => $user,
+        'token' => $token,
+    ]);
+}
 
 	public function attempt(){
 		$this->validateLogin();
@@ -46,8 +70,8 @@ class LoginController extends Controller {
 	}
 
 	protected function sendLoginResponse(){
-        Log::info('Session middleware is active:', ['hasSession' => request()->hasSession()]);
-        Log::info('Authenticated User:', ['user' => auth()->user()]);
+        Log::error('Session middleware is active:', ['hasSession' => request()->hasSession()]);
+        Log::error('Authenticated User:', ['user' => auth()->user()]);
 		request()->session()->regenerate();
 		if(request()->expectsJson()){
 			return response()->json([

@@ -24,6 +24,7 @@ Route::prefix('events')->group(function () {
 });
 
 //Route::middleware('guest')->post('/register', [LoginController::class, 'store']);
-Route::middleware(['web'])->group(function () {
+//Route::middleware(['web'])->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
-});
+
+    
