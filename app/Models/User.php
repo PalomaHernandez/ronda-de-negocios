@@ -38,5 +38,8 @@ class User extends Authenticatable {
 		return $this->hasMany(Meeting::class, 'receiver_id');
 	}*/
 
+	public function images() {
+        return $this->hasMany(Image::class);
+    }
 
 }

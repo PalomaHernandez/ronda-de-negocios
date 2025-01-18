@@ -10,7 +10,7 @@ class Image extends Model
         'path',
     ];
 
-    public function registration() {
-        return $this->belongsTo(Registration::class);
+    public function user() {
+        return $this->belongsTo(User::class);
     }
 }

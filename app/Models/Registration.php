@@ -16,7 +16,7 @@ class Registration extends Model
     ];
 
 	protected $casts = [
-        'inscription_date'
+        'inscription_date' => 'datetime',
 	];
 
     public function participant(): BelongsTo
@@ -27,9 +27,5 @@ class Registration extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
-    }
-    
-    public function images() {
-        return $this->hasMany(Image::class);
     }
 }

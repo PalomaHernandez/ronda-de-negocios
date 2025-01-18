@@ -60,6 +60,10 @@ class Event extends Model {
         return $this->hasMany(Meeting::class);
     }
 
+    public function participants() {
+        return $this->hasMany(Registration::class);
+    }
+
     public function files() {
         return $this->hasMany(File::class);
     }

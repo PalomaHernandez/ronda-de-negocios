@@ -5,36 +5,54 @@ use App\Repositories\Interfaces\UserRepository;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use App\Actions\UploadImages;
 
-class UserRepositoryImpl implements UserRepository {
+class UserRepositoryImpl implements UserRepository
+{
 
-	public function authenticated():?User{
+	public function authenticated(): ?User
+	{
 		return request()->user();
 	}
 
-	public function findById(int $id):User{
+	public function findById(int $id): User
+	{
 		return User::findOrFail($id);
 	}
 
-    public function findByEmail(string $email):User{
+	public function findByEmail(string $email): User
+	{
 		return User::where('email', $email)->firstOrFail();
 	}
 
-	public function create():User{
-		$validatedData = request()->validate([
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-            'name' => 'nullable|string',
-            'activity' => 'nullable|string',
-            'location' => 'nullable|string',
-            'website' => 'nullable|url',
-            'logo_path' => 'nullable|string',
-        ]);
-		//Asignar rol?
-        $user = User::create($validatedData); 
+	public function create(): User
+	{
+		// Validar datos
+		$validatedData = $this->validateParticipant();
+		Log::info('User data:', ['data' => $validatedData]);
 
-        return response()->json($user, 201); 
+		// Encriptar contraseña
+		$validatedData['password'] = bcrypt($validatedData['password']);
+
+		// Crear usuario y asignar rol
+		$user = User::create($validatedData);
+		$user->assign('participant');
+
+		// Subir logo si está presente
+
+		if (request()->hasFile('logo')) {
+			UploadImages::execute($user, 'logo');
+		}
+
+		// Subir galería si está presente
+		if (request()->hasFile('gallery')) {
+			UploadImages::execute($user, 'gallery');
+		}
+
+		return $user;
 	}
+
 
 
 	public function createOrUpdateResponsible(array $data): User
@@ -48,34 +66,40 @@ class UserRepositoryImpl implements UserRepository {
 			$user->update(['password' => bcrypt($data['responsible_password'])]);
 		}
 		$user->assign('responsible');
-		return $user; 
+		return $user;
 	}
 
 	//Validación para creación de usuario participante.
-	private function validateParticipant():array{
+	private function validateParticipant(): array
+	{
 		return request()->validate([
 			'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-            'name' => 'required|string',
-            'activity' => 'required|string',
-            'location' => 'required|string',
-            'website' => 'required|url',
+			'password' => 'required|min:8|confirmed',
+			'name' => 'required|string',
+			'activity' => 'required|string',
+			'location' => 'required|string',
+			'website' => 'required|url',
+			'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+			'gallery' => 'nullable|array',
+			'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 		]);
 	}
 
-	public function update(int $id):User{
+	public function update(int $id): User
+	{
 		$user = $this->findById($id);
 		$validate = request()->validate([
-            'name' => 'required|string',
-            'activity' => 'required|string',
-            'location' => 'required|string',
-            'website' => 'required|url',
+			'name' => 'required|string',
+			'activity' => 'required|string',
+			'location' => 'required|string',
+			'website' => 'required|url',
 		]);
 		$user->update($validate);
 		return $user->fresh();
 	}
 
-	public function destroy(int $id):?bool{
+	public function destroy(int $id): ?bool
+	{
 		return $this->findById($id)->delete();
 	}
 

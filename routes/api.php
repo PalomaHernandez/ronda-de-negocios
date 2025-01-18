@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
@@ -23,8 +24,12 @@ Route::prefix('events')->group(function () {
     Route::delete('/{id}', [EventController::class, 'destroy']); // DELETE para eliminar un evento
 });
 
+Route::middleware([ 'auth:sanctum'])->group(function (){
+    
+});
+
 //Route::middleware('guest')->post('/register', [LoginController::class, 'store']);
 //Route::middleware(['web'])->group(function () {
-    Route::post('/login', [LoginController::class, 'login']);
-
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/register', [UserController::class, 'store']);
     

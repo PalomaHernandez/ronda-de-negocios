@@ -35,10 +35,10 @@ class UserController extends Controller{
     public function store(Request $request)
     {
         $user = $this->repository->create();
-		if(request()->expectsJson()){
-			return response()->json($user);
-		}
-		return view('users.index', compact('user'));
+        if (!$user) {
+            return response()->json(['message' => 'Registro no exitoso'], 400);
+        }
+		return response()->json($user, 201);
  
     }
 
