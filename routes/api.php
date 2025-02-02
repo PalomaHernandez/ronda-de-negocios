@@ -18,7 +18,7 @@ Route::prefix('events')->group(function () {
     Route::get('/{name}', [EventController::class, 'showByName']); // Nueva ruta para obtener evento por nombre
 
     // Actualizar un evento (si es necesario)
-    Route::put('/{id}', [EventController::class, 'update']); // PUT para actualización de eventos
+    Route::patch('/{id}', [EventController::class, 'update']); // PUT para actualización de eventos
 
     // Eliminar un evento (si es necesario)
     Route::delete('/{id}', [EventController::class, 'destroy']); // DELETE para eliminar un evento

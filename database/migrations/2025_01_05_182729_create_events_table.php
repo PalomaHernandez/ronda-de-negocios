@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('responsible_id')->constrained('users')->restrictOnDelete()->cascadeOnUpdate();;
             $table->string('title')->unique();
             $table->string('description')->nullable();
+            $table->string('location')->nullable();
             $table->string('logo_path')->nullable();
             $table->date('date');
             $table->time('starts_at')->nullable();

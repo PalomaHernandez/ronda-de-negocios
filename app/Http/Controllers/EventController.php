@@ -56,7 +56,7 @@ public function showByName($name)
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'unique|string|max:255',
             'description' => 'nullable|string',
             'starts_at' => 'nullable|date_format:H:i:s',
             'ends_at' => 'nullable|date_format:H:i:s',
@@ -127,7 +127,7 @@ public function store(Request $request)
     public function update(Request $request, int $id)
     {
         $validatedData = $request->validate([
-            'title' => 'nullable|string|max:255',
+            'title' => 'unique|string|max:255',
             'description' => 'nullable|string',
             'starts_at' => 'nullable|date_format:H:i:s',
             'ends_at' => 'nullable|date_format:H:i:s',
