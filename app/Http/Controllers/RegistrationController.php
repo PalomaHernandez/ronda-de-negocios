@@ -76,4 +76,22 @@ class RegistrationController extends Controller {
 
         return response()->json(['message' => 'Registration deleted successfully'], 200);
     }
+
+    public function getParticipantsByEvent($eventId)
+    {
+        $participants = Registration::where('event_id', $eventId)
+            ->with([
+                'participant:id,name,email,activity,location,website,logo_path', // Selecciona solo los campos necesarios
+                'participant.images:path,user_id'  // Agrega las imágenes del usuario
+            ])
+            ->get()
+            ->pluck('participant');
+    
+        if ($participants->isEmpty()) {
+            return response()->json(['message' => 'No participants found'], 404);
+        }
+    
+        return response()->json($participants);
+    }
+
 }
