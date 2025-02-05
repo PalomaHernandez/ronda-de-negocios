@@ -12,6 +12,17 @@
             <div class="w-full max-w-md">
                 <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                     <div class="mb-4 text-center text-2xl font-bold">{{ __('Iniciar sesión') }}</div>
+                    @if (session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
                     @if($errors->any())
                         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                         @foreach($errors->all() as $error)

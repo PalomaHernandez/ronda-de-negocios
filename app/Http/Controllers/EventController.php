@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\EventRepository;
 use App\Repositories\Interfaces\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller {
 
@@ -110,7 +111,7 @@ public function store(Request $request)
             $fieldName = $translatedFields[$field] ?? $field; 
             $errorMessage .= ucfirst($fieldName) . ": " . implode(", ", $messages);
         }
-    
+        Log::error($errorMessage);
         return redirect()->back()
             ->withErrors($errors)
             ->with('error', $errorMessage);
@@ -124,26 +125,27 @@ public function store(Request $request)
     return redirect()->route('home')->with('success', 'Evento creado exitosamente.');
 }
 
-    public function update(Request $request, int $id)
-    {
-        $validatedData = $request->validate([
-            'title' => 'unique|string|max:255',
-            'description' => 'nullable|string',
-            'starts_at' => 'nullable|date_format:H:i:s',
-            'ends_at' => 'nullable|date_format:H:i:s',
-            'date' => 'nullable|date',
-            'meeting_duration' => 'nullable|date_format:H:i:s',
-            'time_between_meetings' => 'nullable|date_format:H:i:s',
-            'inscription_end_date' => 'nullable|date',
-            'matching_end_date' => 'nullable|date',
-            'logo_path' => 'nullable|string',
-            'status' => 'nullable|string',
-        ]);
+public function update(Request $request, int $id)
+{
+    $validatedData = $request->validate([
+        'title' => 'required|string|max:255|unique:events,title,'.$id,
+        'description' => 'nullable|string',
+        'starts_at' => 'nullable',
+        'ends_at' => 'nullable',
+        'date' => 'nullable|date',
+        'meeting_duration' => 'nullable',
+        'time_between_meetings' => 'nullable',
+        'inscription_end_date' => 'nullable|date',
+        'matching_end_date' => 'nullable|date',
+        'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
+        'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt|max:8000'
+    ]);
 
-        $this->repository->update($id, $validatedData);
+    $this->repository->update($id, $validatedData);
 
-        //return response()->json($event);
-    }
+    return response()->json(['message' => 'Evento actualizado correctamente']);
+}
+
 
 
     public function destroy(Request $request)

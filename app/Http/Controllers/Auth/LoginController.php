@@ -25,14 +25,10 @@ class LoginController extends Controller {
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
-        Log::info('Authenticated User:', ['user' => Auth::user()]);
     $user = Auth::user();
-    $token = $user->createToken('API Token')->plainTextToken;
-	Log::info('Session middleware is active:',['token' => $token]);
-
     return response()->json([
         'user' => $user,
-        'token' => $token,
+    	'role' => $user->roles->pluck('name'),
     ]);
 }
 
@@ -78,7 +74,7 @@ class LoginController extends Controller {
 				'res' => true,
 				'text' => 'Inicio de sesión exitoso',
 				'user' => request()->user(),
-				'accessToken'=> request()->bearerToken(),
+				'roles' => request()->user()->roles->pluck('name')
 			]);
 		}
 		return redirect()->route('home');

@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Actions\UploadFiles;
 use App\Models\Event;
 use App\Models\User;
 use App\Repositories\Interfaces\EventRepository;
@@ -26,7 +27,19 @@ class EventRepositoryImpl implements EventRepository
         ]);
     }
     public function update(int $id, array $data): void{
-        $this->getById($id)->update($data);
+        $event= $this->getById($id);
+
+        $event->update($data);
+
+        dd(request()->all());
+
+        if (request()->hasFile('logo')) {
+			UploadFiles::execute($event, 'logo');
+		}
+
+        if (request()->hasFile('documents')) {
+			UploadFiles::execute($event, 'documents');
+		}
     }
     public function delete(int $id): void{
         $this->getById($id)->delete();
