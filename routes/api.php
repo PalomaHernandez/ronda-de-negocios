@@ -37,4 +37,4 @@ Route::middleware([ 'auth:sanctum'])->group(function (){
 //Route::middleware(['web'])->group(function () {
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [UserController::class, 'store']);
-    
+Route::get('/events/{id}/participants', [RegistrationController::class, 'getParticipants']);  

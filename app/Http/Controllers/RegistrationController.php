@@ -77,21 +77,38 @@ class RegistrationController extends Controller {
         return response()->json(['message' => 'Registration deleted successfully'], 200);
     }
 
-    public function getParticipantsByEvent($eventId)
+    public function getParticipants($eventId)
     {
-        $participants = Registration::where('event_id', $eventId)
+        $registrations = Registration::where('event_id', $eventId)
             ->with([
-                'participant:id,name,email,activity,location,website,logo_path', // Selecciona solo los campos necesarios
-                'participant.images:path,user_id'  // Agrega las imágenes del usuario
+                'participant:id,name,email,activity,location,website,logo_path',
+                'participant.images:path,user_id'
             ])
-            ->get()
-            ->pluck('participant');
+            ->get();
     
-        if ($participants->isEmpty()) {
-            return response()->json(['message' => 'No participants found'], 404);
+        if ($registrations->isEmpty()) {
+            return response()->json(['message' => 'No participants found for this event.'], 404);
         }
+    
+        $participants = $registrations->map(function ($registration) {
+            return [
+                'id' => $registration->participant->id,
+                'name' => $registration->participant->name,
+                'email' => $registration->participant->email,
+                'activity' => $registration->participant->activity,
+                'location' => $registration->participant->location,
+                'website' => $registration->participant->website,
+                'logo_path' => $registration->participant->logo_path ? asset('storage/' . $registration->participant->logo_path) : null,
+                'profile_image' => $registration->participant->images->isNotEmpty() 
+                    ? asset('storage/' . $registration->participant->images->first()->path) 
+                    : null,
+                'interests' => $registration->interests,
+                'product_services' => $registration->products_services,
+                'remaining_meetings' => $registration->remaining_meetings,
+            ];
+        });
     
         return response()->json($participants);
     }
-
+    
 }
