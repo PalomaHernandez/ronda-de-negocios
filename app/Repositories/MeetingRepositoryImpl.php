@@ -18,6 +18,15 @@ class MeetingRepositoryImpl implements MeetingRepository
     public function getMeetingsForParticipant(int $participant_id):Collection|array{
         return Meeting::where('participant_id', $participant_id)->get(); ;
     }
+    public function getMeetingsByEventAndUser(int $event_id, int $user_id): Collection|array
+    {
+        return Meeting::where('event_id', $event_id)
+                     ->where(function ($query) use ($user_id) {
+                         $query->where('requester_id', $user_id)
+                               ->orWhere('receiver_id', $user_id);
+                     })
+                     ->get();
+    }
     public function getById(int $id):Meeting|Model{
         return Meeting::with(['event', 'requester', 'receiver'])->find($id);
     }

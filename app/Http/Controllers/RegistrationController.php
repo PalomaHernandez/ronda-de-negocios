@@ -24,7 +24,7 @@ class RegistrationController extends Controller {
 
     public function show($id)
     {
-        $registration = Registration::find($id);
+        $registration = $this->repository->getById($id);
 
         if (!$registration) {
             return response()->json(['message' => 'Registration not found'], 404);
@@ -79,12 +79,8 @@ class RegistrationController extends Controller {
 
     public function getParticipants($eventId)
     {
-        $registrations = Registration::where('event_id', $eventId)
-            ->with([
-                'participant:id,name,email,activity,location,website,logo_path',
-                'participant.images:path,user_id'
-            ])
-            ->get();
+        $registrations = $this->repository->getRegistrationsByEvent($eventId);
+
     
         if ($registrations->isEmpty()) {
             return response()->json(['message' => 'No participants found for this event.'], 404);

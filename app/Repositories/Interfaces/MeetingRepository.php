@@ -11,6 +11,7 @@ interface MeetingRepository
     public function getAll():Collection|array;
     public function getMeetingsByEvent(int $event_id):Collection|array;
     public function getMeetingsForParticipant(int $participant_id):Collection|array;
+    public function getMeetingsByEventAndUser(int $event_id, int $participant_id): Collection|array; 
     public function getById(int $id):Meeting|Model;
     public function create(array $data):Meeting|Model;
     public function updateMeeting(int $id, array $data):Meeting|Model;

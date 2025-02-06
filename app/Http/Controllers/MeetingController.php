@@ -77,4 +77,27 @@ class MeetingController extends Controller{
 
         return response()->json(['message' => 'Meeting deleted successfully'], 200);
     }
+
+    public function getMeetingsByEvent($id)
+    {
+        $meetings = $this->repository->getMeetingsByEvent($id);
+    
+        if ($meetings->isEmpty()) {
+            return response()->json(['message' => 'No meetings found for this event.'], 404);
+        }
+    
+        return response()->json($meetings);
+    }
+
+    public function getMeetingsByEventAndUser($event_id, $user_id)
+    {
+        $meetings = $this->repository->getMeetingsByEventAndUser($event_id, $user_id);
+    
+        if (!$meetings) {
+            return response()->json(['message' => 'No meetings found for this event and user.'], 404);
+        }
+    
+        return response()->json($meetings);
+    }
+    
 }

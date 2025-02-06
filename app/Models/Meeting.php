@@ -18,9 +18,19 @@ class Meeting extends Model
 
     protected $casts = [
         'time' => 'datetime',
-        'status' => MeetingStatus::class,
 	];
+    // ✅ Convierte el string de la base de datos en un objeto Enum automáticamente
+    public function getStatusAttribute($value): MeetingStatus
+    {
+        return MeetingStatus::tryFrom($value) ?? MeetingStatus::DEFAULT_STATUS; // Evita errores si el valor no existe
+    }
 
+    // ✅ Convierte la Enum en un string antes de guardarla en la base de datos
+    public function setStatusAttribute(MeetingStatus $value)
+    {
+        $this->attributes['status'] = $value->value;
+    }
+    
     public function event() {
         return $this->belongsTo(Event::class);
     }
