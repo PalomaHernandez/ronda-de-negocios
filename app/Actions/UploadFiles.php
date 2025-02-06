@@ -13,6 +13,7 @@ class UploadFiles {
         : request()->file('documents');
 
 		foreach ($files as $file) {
+			$fileOriginalName = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
             $fileName = uuid_create() . '.' . $extension;
 
@@ -21,7 +22,7 @@ class UploadFiles {
             if ($type === 'logo') {
                 $event->update(['logo_path' => $path]);
             } else {
-                $event->files()->create(['path' => $path]);
+                $event->files()->create(['path' => $path, 'original_name' => $fileOriginalName]);
             }
         }
     

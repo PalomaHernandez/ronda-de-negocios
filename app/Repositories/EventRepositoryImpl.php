@@ -9,6 +9,9 @@ use App\Repositories\Interfaces\EventRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use App\Patterns\State\Event\EventStatus;
+use App\Models\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class EventRepositoryImpl implements EventRepository
 {
@@ -17,6 +20,9 @@ class EventRepositoryImpl implements EventRepository
     }
     public function getById(int $id):Event|Model{
         return Event::find($id);
+    }
+    public function getByName(string $name):Event|Model{
+        return Event::with('files')->where('title', $name)->first();
     }
     public function create(array $data, User $responsible): void{
         Event::create([
@@ -31,7 +37,14 @@ class EventRepositoryImpl implements EventRepository
 
         $event->update($data);
 
-        dd(request()->all());
+        $deletedFiles = request()->input('deleted_files', []);
+        foreach ($deletedFiles as $fileId) {
+            $file = File::find($fileId);
+            if ($file) {
+                Storage::delete($file->path);
+                $file->delete();
+            }
+        }
 
         if (request()->hasFile('logo')) {
 			UploadFiles::execute($event, 'logo');

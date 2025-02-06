@@ -8,6 +8,7 @@ class File extends Model
 {
     protected $fillable = [
         'path',
+        'original_name',
     ];
 
     public function event() {

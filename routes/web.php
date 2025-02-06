@@ -12,6 +12,9 @@ Route::middleware('auth')->group(function (){
     Route::get('/delete-event', [EventController::class, 'deleteEventModal'])->name('events.deleteModal');
 });
 
+Route::get('/', [EventController::class, 'index'])->name('home');
+    Route::post('/events/create', [EventController::class, 'store'])->name('events.create');
+
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'attempt'])->name('login.attempt');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

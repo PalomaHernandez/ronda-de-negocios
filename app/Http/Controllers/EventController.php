@@ -9,6 +9,7 @@ use App\Repositories\Interfaces\EventRepository;
 use App\Repositories\Interfaces\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller {
@@ -44,10 +45,18 @@ class EventController extends Controller {
 */
 public function showByName($name)
 {
-    $event = Event::where('title', $name)->first();
+    $event = $this->repository->getByName($name);
 
     if (!$event) {
         return response()->json(['message' => 'Event not found'], 404);
+    }
+    else{
+        $event->logo_url = url('storage/' . $event->logo_path);
+
+        $event->files->transform(function ($file) {
+            $file->file_url = url('storage/' . $file->path);
+            return $file;
+        });
     }
 
     return response()->json($event);
@@ -127,23 +136,30 @@ public function store(Request $request)
 
 public function update(Request $request, int $id)
 {
-    $validatedData = $request->validate([
+    $validator = Validator::make($request->all(), [
         'title' => 'required|string|max:255|unique:events,title,'.$id,
         'description' => 'nullable|string',
-        'starts_at' => 'nullable',
-        'ends_at' => 'nullable',
+        'starts_at' => 'nullable|date_format:H:i:s',
+        'ends_at' => 'nullable|date_format:H:i:s',
         'date' => 'nullable|date',
-        'meeting_duration' => 'nullable',
-        'time_between_meetings' => 'nullable',
+        'meeting_duration' => 'nullable|date_format:H:i:s',
+        'time_between_meetings' => 'nullable|date_format:H:i:s',
         'inscription_end_date' => 'nullable|date',
         'matching_end_date' => 'nullable|date',
-        'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:4096',
-        'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt|max:8000'
+        'logo' => 'nullable|image|mimes:jpeg,png,jpg',
+        'documents' => 'nullable|array',
+        'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt'
     ]);
 
-    $this->repository->update($id, $validatedData);
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422)
+            ->header('Access-Control-Allow-Origin', '*');
+    }
 
-    return response()->json(['message' => 'Evento actualizado correctamente']);
+    $this->repository->update($id, $validator->validated());
+
+    return response()->json(['message' => 'Evento actualizado correctamente'])
+        ->header('Access-Control-Allow-Origin', '*');
 }
 
 
