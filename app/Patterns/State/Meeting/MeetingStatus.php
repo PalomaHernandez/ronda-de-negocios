@@ -10,6 +10,8 @@ enum MeetingStatus:string {
 
 	case Rejected = 'Rechazada'; //Matcheo
 
+	const DEFAULT_STATUS = self::Pending;
+
 
 	/*public function canUpdate():bool{
 		return match ($this) {

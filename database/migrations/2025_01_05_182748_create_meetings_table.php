@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('event_id')->constrained('events')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreignId('requester_id')->constrained('users')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreignId('receiver_id')->constrained('users')->restrictOnDelete()->cascadeOnUpdate();
-            $table->text('reason');
+            $table->text('reason')->nullable();
             $table->enum('requester_role', [
                 RequesterRole::Supplier->value,
                 RequesterRole::Buyer->value,
@@ -30,7 +30,7 @@ return new class extends Migration
                 MeetingStatus::Pending->value,
             ])->default(MeetingStatus::Pending->value);
             $table->integer('assigned_table')->nullable();
-            $table->time('time');
+            $table->time('time')->nullable();
             $table->timestamps();
         });
     }

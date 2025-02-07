@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Patterns\State\Meeting\MeetingStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Meeting extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'reason',
         'requester_role',
