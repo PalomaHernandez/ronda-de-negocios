@@ -11,16 +11,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EventFactory extends Factory {
 
-	protected $model = Meeting::class;
+	protected $model = Event::class;
 
 	public function definition():array{
 		return [
             'title' => $this->faker->text(50),
-			'requester_id' => User::inRandomOrder()->first('id')->id,
-			'receiver_id' => User::inRandomOrder()->first('id')->id,
-            'event_id' => Event::inRandomOrder()->first('id')->id,
             'description' => $this->faker->sentence(10),
-            'requester_role' => RequesterRole::Buyer,
             'date' => $this->faker->date('d-m-Y'),
             'location' => $this->faker->city,
 			'starts_at' => '09:00:00',

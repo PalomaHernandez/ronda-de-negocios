@@ -27,11 +27,6 @@ class MeetingFactory extends Factory
             $query->where('name', 'participant');
         })->inRandomOrder()->get(['id']);
 
-        // Si hay menos de 2 participantes, no se puede crear la reunión
-        if ($participants->count() < 2) {
-            throw new \Exception("No hay suficientes usuarios con el rol 'participant' para crear una reunión.");
-        }
-
         // Seleccionar aleatoriamente dos usuarios diferentes
         $requester = $participants->random();
         $receiver = $participants->where('id', '!=', $requester->id)->random();

@@ -3,13 +3,14 @@
 namespace Database\Factories;
 
 use App\Models\Event;
+use App\Models\Registration;
 use App\Models\User;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RegistrationFactory extends Factory {
 
-	protected $model = Meeting::class;
+	protected $model = Registration::class;
 
 	public function definition():array{
 		return [
@@ -20,7 +21,7 @@ class RegistrationFactory extends Factory {
             'inscription_date' => now(),
             'interests' => $this->faker->sentence,
             'products_services' => $this->faker->sentence,
-            'remaining_meeting' => 5,
+            'remaining_meetings' => 5,
 		];
 	}
 

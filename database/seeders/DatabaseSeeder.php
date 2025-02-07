@@ -37,16 +37,17 @@ class DatabaseSeeder extends Seeder
             $user->assign('participant');
             }
         }
-        $admin = User::factory()->create([
-			'email' => 'admin@gmail.com',
-			'password'   => static::$password ??= Hash::make('admin'),
-		]);
+        $admin = User::create([
+            'name' => 'Administrador', 
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('admin'),
+        ]);
         $admin->assign('administrator');
         
         Event::factory(3)->create();
         File::factory(10)->create();
         Image::factory(10)->create();
         Registration::factory(3)->create();
-        \App\Models\Meeting::factory(10)->create();
+        Meeting::factory(10)->create();
     }
 }
