@@ -41,3 +41,5 @@ Route::post('/register', [UserController::class, 'store']);
 Route::get('/events/{id}/participants', [RegistrationController::class, 'getParticipants']); 
 Route::get('/events/{event_id}/meetings', [MeetingController::class, 'getMeetingsByEvent']);
 Route::get('/events/{event_id}/meetings/{user_id}', [MeetingController::class, 'getMeetingsByEventAndUser']);
+Route::get('/events/{event_id}/notifications/{user_id}', [RegistrationController::class, 'getNotifications']);
+

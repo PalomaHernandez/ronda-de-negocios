@@ -107,4 +107,20 @@ class RegistrationController extends Controller {
         return response()->json($participants);
     }
     
+    public function getNotifications($event_id, $user_id)
+    {
+        // Buscar la inscripción (Registration) del usuario en el evento
+        $registration = Registration::where('event_id', $event_id)
+                                    ->where('participant_id', $user_id)
+                                    ->first();
+
+        // Si no existe, devolver un error
+        if (!$registration) {
+            return response()->json(['message' => 'Registration not found'], 404);
+        }
+
+        // Obtener y devolver las notificaciones de esa inscripción
+        return response()->json($registration->notifications);
+    }
+
 }
