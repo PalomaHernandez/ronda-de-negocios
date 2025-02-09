@@ -22,7 +22,7 @@ class EventRepositoryImpl implements EventRepository
         return Event::find($id);
     }
     public function getByName(string $name):Event|Model{
-        return Event::with('files')->where('title', $name)->first();
+        return Event::with('files')->where('slug', $name)->first();
     }
     public function create(array $data, User $responsible): void{
         Event::create([
@@ -34,6 +34,8 @@ class EventRepositoryImpl implements EventRepository
     }
     public function update(int $id, array $data): void{
         $event= $this->getById($id);
+
+        $currentLogo = $event->logo_path;
 
         $event->update($data);
 
@@ -47,6 +49,9 @@ class EventRepositoryImpl implements EventRepository
         }
 
         if (request()->hasFile('logo')) {
+            if ($currentLogo) {
+                Storage::delete($currentLogo);
+            }
 			UploadFiles::execute($event, 'logo');
 		}
 
@@ -54,6 +59,7 @@ class EventRepositoryImpl implements EventRepository
 			UploadFiles::execute($event, 'documents');
 		}
     }
+
     public function delete(int $id): void{
         $this->getById($id)->delete();
     }

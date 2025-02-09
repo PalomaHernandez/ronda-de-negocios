@@ -7,11 +7,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class Event extends Model {
     use HasFactory;
+
+    public static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($event) {
+            $event->slug = Str::slug($event->title);
+        });
+    }
+
     protected $fillable = [
 		'title',
+        'slug',
 		'description',
 		'starts_at',
 		'ends_at',

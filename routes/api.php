@@ -17,7 +17,7 @@ Route::prefix('events')->group(function () {
     Route::get('/', [EventController::class, 'index']); // No es necesario el nombre si no es una vista
 
     // Obtener un evento específico por nombre
-    Route::get('/{name}', [EventController::class, 'showByName']); // Nueva ruta para obtener evento por nombre
+    Route::get('/{slug}', [EventController::class, 'showByName']); // Nueva ruta para obtener evento por nombre
 
     // Actualizar un evento (si es necesario)
     Route::patch('/{id}', [EventController::class, 'update']); // PUT para actualización de eventos
@@ -37,6 +37,7 @@ Route::middleware([ 'auth:sanctum'])->group(function (){
 //Route::middleware('guest')->post('/register', [LoginController::class, 'store']);
 //Route::middleware(['web'])->group(function () {
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout']);
 Route::post('/register', [UserController::class, 'store']);
 Route::get('/events/{id}/participants', [RegistrationController::class, 'getParticipants']); 
 Route::get('/events/{event_id}/meetings', [MeetingController::class, 'getMeetingsByEvent']);

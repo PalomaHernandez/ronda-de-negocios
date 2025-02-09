@@ -43,9 +43,9 @@ class EventController extends Controller {
         return response()->json($event);
     }
 */
-public function showByName($name)
+public function showByName($slug)
 {
-    $event = $this->repository->getByName($name);
+    $event = $this->repository->getByName($slug);
 
     if (!$event) {
         return response()->json(['message' => 'Event not found'], 404);
