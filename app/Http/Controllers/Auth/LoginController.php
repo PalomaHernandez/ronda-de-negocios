@@ -8,38 +8,44 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
-class LoginController extends Controller {
+class LoginController extends Controller
+{
 
-	public function index(){
+	public function index()
+	{
 		return view('auth.login');
 	}
 
 	public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+	{
+		$credentials = $request->validate([
+			'email' => 'required|email',
+			'password' => 'required',
+		]);
 
-    if (!Auth::attempt($credentials)) {
-        return response()->json(['message' => 'Invalid credentials'], 401);
-    }
+		if (!Auth::attempt($credentials)) {
+			return response()->json(['message' => 'Invalid credentials'], 401);
+		}
 
-    $user = Auth::user();
-    return response()->json([
-        'user' => $user,
-    	'role' => $user->roles->pluck('name'),
-    ]);
-}
+		$user = Auth::user();
 
-	public function attempt(){
+		Log::info('Usuario autenticado:', ['user' => $user]);
+    Log::info('Cookies:', request()->cookies->all());
+		return response()->json([
+			'user' => $user,
+			'role' => $user->roles->pluck('name'),
+		]);
+	}
+
+	public function attempt()
+	{
 		$this->validateLogin();
-        
-		if($this->attemptLogin()){
+
+		if ($this->attemptLogin()) {
 			return $this->sendLoginResponse();
 		}
 
-		if(request()->expectsJson()){
+		if (request()->expectsJson()) {
 			return response()->json([
 				'res' => false,
 				'text' => 'No se ha podido iniciar sesión.',
@@ -50,26 +56,30 @@ class LoginController extends Controller {
 		]);
 	}
 
-	protected function validateLogin():void{
+	protected function validateLogin(): void
+	{
 		request()->validate([
-			'email'    => 'required|email',
+			'email' => 'required|email',
 			'password' => 'required',
 		]);
 	}
 
-	protected function attemptLogin():bool{
+	protected function attemptLogin(): bool
+	{
 		return auth()->attempt($this->credentials());
 	}
 
-	protected function credentials():array{
+	protected function credentials(): array
+	{
 		return request()->only('email', 'password');
 	}
 
-	protected function sendLoginResponse(){
-        Log::error('Session middleware is active:', ['hasSession' => request()->hasSession()]);
-        Log::error('Authenticated User:', ['user' => auth()->user()]);
+	protected function sendLoginResponse()
+	{
+		Log::error('Session middleware is active:', ['hasSession' => request()->hasSession()]);
+		Log::error('Authenticated User:', ['user' => auth()->user()]);
 		request()->session()->regenerate();
-		if(request()->expectsJson()){
+		if (request()->expectsJson()) {
 			return response()->json([
 				'res' => true,
 				'text' => 'Inicio de sesión exitoso',
@@ -80,18 +90,29 @@ class LoginController extends Controller {
 		return redirect()->route('home');
 	}
 
-	public function logout(){
-		auth()->logout();
-		request()->session()->invalidate();
-		request()->session()->regenerateToken();
-		if($response = $this->loggedOut()){
-			return $response;
+	public function logout(Request $request)
+	{
+		$user = Auth::user();
+
+		Log::info('User:', ['user' => $user]);
+
+		if (!$user) {
+			return response()->json(['message' => 'No estás autenticado'], 401);
 		}
-		abort(500);
+
+		// Revocar tokens personales si estás usando Sanctum
+		$user->tokens()->delete();
+
+		Auth::logout();
+		$request->session()->invalidate();
+		$request->session()->regenerateToken();
+
+		return response()->json(['message' => 'Logout exitoso']);
 	}
 
-	protected function loggedOut(){
-		if(request()->expectsJson()){
+	protected function loggedOut()
+	{
+		if (request()->expectsJson()) {
 			return response()->json([
 				'res' => true,
 				'text' => 'Cierre de sesión exitoso',

@@ -32,12 +32,17 @@ Route::prefix('events')->group(function () {
 
 Route::middleware([ 'auth:sanctum'])->group(function (){
     
+Route::post('/logout', [LoginController::class, 'logout']);
+});
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return response()->json($request->user());
 });
 
 //Route::middleware('guest')->post('/register', [LoginController::class, 'store']);
 //Route::middleware(['web'])->group(function () {
+//Route::post('/login', [LoginController::class, 'login']);
 Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout']);
+
 Route::post('/register', [UserController::class, 'store']);
 Route::get('/events/{id}/participants', [RegistrationController::class, 'getParticipants']); 
 Route::get('/events/{event_id}/meetings', [MeetingController::class, 'getMeetingsByEvent']);

@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->statefulApi();
         $middleware->group('web', [
             \Illuminate\Http\Middleware\HandleCors::class,
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
