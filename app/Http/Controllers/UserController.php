@@ -33,14 +33,35 @@ class UserController extends Controller{
 
     
     public function store(Request $request)
-    {
-        $user = $this->repository->create();
-        if (!$user) {
-            return response()->json(['message' => 'Registro no exitoso'], 400);
-        }
-		return response()->json($user, 201);
- 
+{
+    try {
+        // Validamos los datos
+        $validatedData = $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+            'name' => 'required|string',
+            'activity' => 'required|string',
+            'location' => 'required|string',
+            'website' => 'required|url',
+        ]);
+
+        $user = $this->repository->create($validatedData);
+        // Generamos el token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+            'message' => 'Registro exitoso'
+        ], 201);
+
+    } catch (\Exception $e) {
+        \Log::error('Error en el registro: ' . $e->getMessage());
+        return response()->json(['error' => 'Error interno en el servidor'], 500);
     }
+}
+
+    
 
     
     public function update(int $id)

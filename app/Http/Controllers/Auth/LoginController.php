@@ -22,20 +22,23 @@ class LoginController extends Controller
 			'email' => 'required|email',
 			'password' => 'required',
 		]);
-
+	
 		if (!Auth::attempt($credentials)) {
 			return response()->json(['message' => 'Invalid credentials'], 401);
 		}
-
+	
 		$user = Auth::user();
-
-		Log::info('Usuario autenticado:', ['user' => $user]);
-    Log::info('Cookies:', request()->cookies->all());
+		
+		// 🔹 Generar un token con Sanctum
+		$token = $user->createToken('auth_token')->plainTextToken;
+	
 		return response()->json([
 			'user' => $user,
 			'role' => $user->roles->pluck('name'),
+			'token' => $token, // 🔹 Devolver el token aquí
 		]);
 	}
+	
 
 	public function attempt()
 	{
@@ -91,24 +94,18 @@ class LoginController extends Controller
 	}
 
 	public function logout(Request $request)
-	{
-		$user = Auth::user();
+{
+    $user = Auth::user();
+    
+    if (!$user) {
+        return response()->json(['message' => 'No estás autenticado'], 401);
+    }
 
-		Log::info('User:', ['user' => $user]);
+    // 🔹 Revocar todos los tokens del usuario
+    $user->tokens()->delete();
 
-		if (!$user) {
-			return response()->json(['message' => 'No estás autenticado'], 401);
-		}
-
-		// Revocar tokens personales si estás usando Sanctum
-		$user->tokens()->delete();
-
-		Auth::logout();
-		$request->session()->invalidate();
-		$request->session()->regenerateToken();
-
-		return response()->json(['message' => 'Logout exitoso']);
-	}
+    return response()->json(['message' => 'Logout exitoso']);
+}
 
 	protected function loggedOut()
 	{

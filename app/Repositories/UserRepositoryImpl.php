@@ -26,30 +26,26 @@ class UserRepositoryImpl implements UserRepository
 		return User::where('email', $email)->firstOrFail();
 	}
 
-	public function create(): User
+	public function create(array $data): User
 	{
-		// Validar datos
-		$validatedData = $this->validateParticipant();
-		Log::info('User data:', ['data' => $validatedData]);
-
-		// Encriptar contraseña
-		$validatedData['password'] = bcrypt($validatedData['password']);
-
-		// Crear usuario y asignar rol
-		$user = User::create($validatedData);
+		$data['password'] = bcrypt($data['password']); // Encriptamos la contraseña
+	
+		// Creamos el usuario
+		$user = User::create($data);
+		
+		// Asignamos el rol (si aplica)
 		$user->assign('participant');
-
-		// Subir logo si está presente
-
+	
+		// Subimos el logo si está presente
 		if (request()->hasFile('logo')) {
 			UploadImages::execute($user, 'logo');
 		}
-
-		// Subir galería si está presente
+	
+		// Subimos la galería si está presente
 		if (request()->hasFile('gallery')) {
 			UploadImages::execute($user, 'gallery');
 		}
-
+	
 		return $user;
 	}
 

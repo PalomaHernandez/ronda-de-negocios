@@ -12,7 +12,7 @@ interface UserRepository {
 	public function findById(int $id):User;
     public function findByEmail(string $email):User;
 
-	public function create():User;
+	public function create(array $data): User;
 
 	public function createOrUpdateResponsible(array $data):User;
 
