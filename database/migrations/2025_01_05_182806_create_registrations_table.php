@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('participant_id')->constrained('users')->restrictOnDelete()->cascadeOnUpdate();;
-            $table->foreignId('event_id')->constrained('events')->restrictOnDelete()->cascadeOnUpdate();;
+            $table->foreignId('event_id')->constrained('events')->cascadeOnDelete()->cascadeOnUpdate();;
             $table->timestamp('inscription_date');
             $table->string('interests')->nullable();
             $table->string('products_services')->nullable();

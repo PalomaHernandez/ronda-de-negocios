@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('meetings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained('events')->restrictOnDelete()->cascadeOnUpdate();
+            $table->foreignId('event_id')->constrained('events')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('requester_id')->constrained('users')->restrictOnDelete()->cascadeOnUpdate();
             $table->foreignId('receiver_id')->constrained('users')->restrictOnDelete()->cascadeOnUpdate();
             $table->text('reason')->nullable();
