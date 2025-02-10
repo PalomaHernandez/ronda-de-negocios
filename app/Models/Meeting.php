@@ -11,11 +11,14 @@ class Meeting extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'event_id',
+        'requester_id',
+        'receiver_id',
         'reason',
         'requester_role',
         'status',
         'assigned_table',
-        'time',
+        'time'
     ];
 
     protected $casts = [

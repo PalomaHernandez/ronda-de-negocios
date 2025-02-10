@@ -6,6 +6,7 @@ use App\Models\Meeting;
 use App\Repositories\Interfaces\MeetingRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Patterns\State\Meeting\MeetingStatus;
 
 class MeetingController extends Controller{
     public function __construct(private readonly MeetingRepository $repository){}
@@ -37,7 +38,7 @@ class MeetingController extends Controller{
         $validatedData = $request->validate([
             'reason' => 'required|string|max:255',
             'requester_role' => 'required|string',
-            'status' => 'required|string',
+            'status' => 'required|in:Pendiente,Aceptada,Rechazada',
             'assigned_table' => 'nullable|string|max:50',
             'time' => 'nullable|date_format:Y-m-d H:i:s',
             'event_id' => 'required|exists:events,id',
@@ -45,6 +46,7 @@ class MeetingController extends Controller{
             'receiver_id' => 'required|exists:users,id',
         ]);
 
+        $validatedData['status'] = MeetingStatus::tryFrom($validatedData['status']) ?? MeetingStatus::Pending;
         $meeting = $this->repository->create($validatedData);
 
         return response()->json($meeting, 201);
@@ -57,7 +59,9 @@ class MeetingController extends Controller{
             'assigned_table' => 'nullable|string|max:50',
             'time' => 'nullable|date_format:Y-m-d H:i:s',
         ]);
-
+        if (isset($validatedData['status'])) {
+            $validatedData['status'] = MeetingStatus::tryFrom($validatedData['status']) ?? MeetingStatus::Pending;
+        }
        $meeting = $this->repository->updateMeeting($id,$validatedData);
 
        if (!$meeting) {

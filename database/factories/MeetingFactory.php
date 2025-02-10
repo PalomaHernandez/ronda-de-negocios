@@ -7,6 +7,7 @@ use App\Patterns\Role\RequesterRole;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Meeting;
+use App\Models\Registration; 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -39,15 +40,36 @@ class MeetingFactory extends Factory
         if (!$event) {
             throw new \Exception("No hay eventos en la base de datos para asignar a la reunión.");
         }
+
+        // Asegurar que el requester tenga una inscripción en el evento
+        $this->ensureRegistrationExists($requester->id, $event->id);
+        // Asegurar que el receiver tenga una inscripción en el evento
+        $this->ensureRegistrationExists($receiver->id, $event->id);
+
         return [
             'requester_id' => $requester->id,
             'receiver_id' => $receiver->id,
             'event_id' => $event->id,
             'reason' => $this->faker->sentence,
-            'requester_role' => RequesterRole::Buyer,
+            'requester_role' => $this->faker->randomElement([
+                RequesterRole::Supplier,
+                RequesterRole::Buyer,
+                RequesterRole::Both,
+            ]), // Ahora es aleatorio
             'time' =>  $this->faker->dateTimeBetween('now', '+1 year')->format('H:i:s'),
-            'status' => MeetingStatus::Pending,
+            'status' => $this->faker->randomElement([
+                MeetingStatus::Accepted,
+                MeetingStatus::Rejected,
+                MeetingStatus::Pending,
+            ]), // Ahora es aleatorio
         ];
+
+    }
+    private function ensureRegistrationExists($userId, $eventId)
+    {
+        $registrationExists = Registration::where('participant_id', $userId)
+                                          ->where('event_id', $eventId)
+                                          ->exists();
 
     }
 }

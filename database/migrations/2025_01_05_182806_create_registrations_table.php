@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('products_services')->nullable();
             $table->integer('remaining_meetings')->nullable();
             $table->timestamps();
+
+            $table->unique(['participant_id', 'event_id']);
         });
     }
 

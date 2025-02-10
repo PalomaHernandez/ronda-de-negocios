@@ -47,7 +47,31 @@ class DatabaseSeeder extends Seeder
         Event::factory(3)->create();
         File::factory(10)->create();
         Image::factory(10)->create();
-        Registration::factory(3)->create();
         Meeting::factory(10)->create();
+        $participants = User::whereHas('roles', function ($query) {
+            $query->where('name', 'participant');
+        })->get();
+        
+        $events = Event::all();
+        $max_registrations = min($participants->count() * $events->count(), 20); // Máximo 20 inscripciones
+    
+        $registrations = [];
+        while (count($registrations) < $max_registrations) {
+            $participant = $participants->random();
+            $event = $events->random();
+    
+            // Evitar duplicados
+            if (!in_array([$participant->id, $event->id], $registrations)) {
+                Registration::create([
+                    'participant_id' => $participant->id,
+                    'event_id' => $event->id,
+                    'inscription_date' => now(),
+                    'interests' => 'Intereses de prueba',
+                    'products_services' => 'Productos de prueba',
+                    'remaining_meetings' => 5,
+                ]);
+                $registrations[] = [$participant->id, $event->id]; // Guardar combinaciones creadas
+            }
+        }
     }
 }
