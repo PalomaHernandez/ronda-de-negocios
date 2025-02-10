@@ -38,11 +38,14 @@ class UserController extends Controller{
         // Validamos los datos
         $validatedData = $request->validate([
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-            'name' => 'required|string',
-            'activity' => 'required|string',
-            'location' => 'required|string',
-            'website' => 'required|url',
+			'password' => 'required|min:8|confirmed',
+			'name' => 'required|string',
+			'activity' => 'required|string',
+			'location' => 'required|string',
+			'website' => 'required|url',
+			'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+			'gallery' => 'nullable|array',
+			'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $user = $this->repository->create($validatedData);
