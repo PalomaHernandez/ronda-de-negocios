@@ -24,8 +24,8 @@ class EventFactory extends Factory {
             'location' => $this->faker->city,
 			'starts_at' => '09:00:00',
             'ends_at' => '17:00:00',
-            'inscription_end_date' => $this->faker->dateTimeBetween('now', '+1 year'),
-            'matching_end_date' => $this->faker->dateTimeBetween('now', '+1 year'),
+            'inscription_end_date' => $this->faker->date('d-m-Y', '+1 year'),
+            'matching_end_date' => $this->faker->date('d-m-Y', '+1 year'),
             'logo_path' => "files/7d51a789-9411-43ca-88bb-cea9cde45c7d.jpg",
 			'responsible_id' => User::whereHas('roles', function($query) {
 				$query->where('name', 'responsible');
