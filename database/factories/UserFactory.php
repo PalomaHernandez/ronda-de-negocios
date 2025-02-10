@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'activity' => fake()->name(),
             'password' => static::$password ??= Hash::make('password'),
             'website' => fake()->url(),
-            'logo_path' => fake()->filePath(),
+            'logo_path' => "images/c75e37c7-bd36-4d9a-819d-d3e6f5edc6ad.png",
         ];
     }
 

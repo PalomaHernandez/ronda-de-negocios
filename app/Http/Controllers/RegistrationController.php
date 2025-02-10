@@ -7,15 +7,18 @@ use App\Models\Registration;
 use App\Repositories\Interfaces\RegistrationRepository;
 use Illuminate\Http\Request;
 
-class RegistrationController extends Controller {
+class RegistrationController extends Controller
+{
 
-    public function __construct(private readonly RegistrationRepository $repository){}
+    public function __construct(private readonly RegistrationRepository $repository)
+    {
+    }
 
     public function index()
     {
         $registrations = $this->repository->getAll();
 
-        if(!$registrations){
+        if (!$registrations) {
             return response()->json(['message' => 'There are no meetings.'], 404);
         }
 
@@ -57,7 +60,7 @@ class RegistrationController extends Controller {
             'remaining_meetings' => 'nullable|integer',
         ]);
 
-        $registration = $this->repository->updateRegistration($id,$validatedData);
+        $registration = $this->repository->updateRegistration($id, $validatedData);
 
         if (!$registration) {
             return response()->json(['message' => 'Registration not found'], 404);
@@ -81,11 +84,11 @@ class RegistrationController extends Controller {
     {
         $registrations = $this->repository->getRegistrationsByEvent($eventId);
 
-    
+
         if ($registrations->isEmpty()) {
             return response()->json(['message' => 'No participants found for this event.'], 404);
         }
-    
+
         $participants = $registrations->map(function ($registration) {
             return [
                 'id' => $registration->participant->id,
@@ -94,16 +97,21 @@ class RegistrationController extends Controller {
                 'activity' => $registration->participant->activity,
                 'location' => $registration->participant->location,
                 'website' => $registration->participant->website,
-                'logo_path' => $registration->participant->logo_path ? asset('storage/' . $registration->participant->logo_path) : null,
-                'profile_image' => $registration->participant->images->isNotEmpty() 
-                    ? asset('storage/' . $registration->participant->images->first()->path) 
+                'logo_path' => $registration->participant->logo_path
+                    ? url('storage/' . $registration->participant->logo_path)
+                    : null,
+                'profile_images' => $registration->participant->images->isNotEmpty()
+                    ? $registration->participant->images->transform(function ($file) {
+                        $file->file_url = url('storage/' . $file->path);
+                        return $file;
+                    })
                     : null,
                 'interests' => $registration->interests,
                 'product_services' => $registration->products_services,
                 'remaining_meetings' => $registration->remaining_meetings,
             ];
         });
-    
+
         return response()->json($participants);
     }
     /*
