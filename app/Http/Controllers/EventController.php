@@ -50,15 +50,7 @@ public function showByName($slug)
     if (!$event) {
         return response()->json(['message' => 'Event not found'], 404);
     }
-    else{
-        $event->logo_url = url('storage/' . $event->logo_path);
-
-        $event->files->transform(function ($file) {
-            $file->file_url = url('storage/' . $file->path);
-            return $file;
-        });
-    }
-
+    
     return response()->json($event);
 }
 
@@ -105,6 +97,7 @@ public function store(Request $request)
             'responsible_password.confirmed' => 'La confirmación de la contraseña no coincide',
             'responsible_password.min' => 'La contraseña debe tener mínimo 8 caracteres',
         ]);
+        
     } catch (ValidationException $e) {
         $errors = $e->errors();
     

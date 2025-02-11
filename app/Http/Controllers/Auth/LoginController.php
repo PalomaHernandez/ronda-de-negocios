@@ -29,13 +29,6 @@ class LoginController extends Controller
 	
 		$user = Auth::user();
 
-		$user->logo_url = url('storage/' . $user->logo_path);
-
-		$user->images->transform(function ($image) {
-            $image->image_url = url('storage/' . $image->path);
-            return $image;
-        });
-		
 		// 🔹 Generar un token con Sanctum
 		$token = $user->createToken('auth_token')->plainTextToken;
 	

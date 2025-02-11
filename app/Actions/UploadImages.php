@@ -20,9 +20,9 @@ class UploadImages
             $path = Storage::disk('public')->putFileAs('images', $image, $imageName);
 
             if ($type === 'logo') {
-                $user->update(['logo_path' => $path]);
+                $user->update(['logo_path' => url('storage/' . $path)]);
             } else {
-                $user->images()->create(['path' => $path]);
+                $user->images()->create(['path' => url('storage/' . $path)]);
             }
         }
     }
