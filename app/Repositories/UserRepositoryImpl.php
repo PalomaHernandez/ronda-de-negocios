@@ -81,17 +81,10 @@ class UserRepositoryImpl implements UserRepository
 		]);
 	}
 
-	public function update(int $id): User
+	public function update(User $user, array $validatedData ): void
 	{
-		$user = $this->findById($id);
-		$validate = request()->validate([
-			'name' => 'required|string',
-			'activity' => 'required|string',
-			'location' => 'required|string',
-			'website' => 'required|url',
-		]);
-		$user->update($validate);
-		return $user->fresh();
+		$user->update($validatedData);
+		
 	}
 
 	public function destroy(int $id): ?bool
