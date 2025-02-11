@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Meeting;
+use App\Models\Registration;
 use App\Repositories\Interfaces\MeetingRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,6 +32,10 @@ class MeetingRepositoryImpl implements MeetingRepository
         return Meeting::with(['event', 'requester', 'receiver'])->find($id);
     }
     public function create(array $data): Meeting{
+        $registration = Registration::findOrFail($data['requester_id']);
+        if($registration){
+            $registration->remaining_meetings--;
+        }
         return Meeting::create($data);
     }
     public function updateMeeting(int $id, array $data): Meeting|Model{

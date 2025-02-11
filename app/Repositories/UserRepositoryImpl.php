@@ -46,7 +46,7 @@ class UserRepositoryImpl implements UserRepository
 			UploadImages::execute($user, 'gallery');
 		}
 	
-		return $user;
+		return $user->load('images');
 	}
 
 
@@ -84,7 +84,6 @@ class UserRepositoryImpl implements UserRepository
 	public function update(User $user, array $validatedData ): void
 	{
 		$user->update($validatedData);
-		
 	}
 
 	public function destroy(int $id): ?bool
