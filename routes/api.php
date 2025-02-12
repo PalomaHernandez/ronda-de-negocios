@@ -42,3 +42,5 @@ Route::get('/events/{event_id}/meetings/{user_id}', [MeetingController::class, '
 Route::patch('/user/profile', [UserController::class, 'update']); 
 
 Route::post('/meetings', [MeetingController::class, 'store']);
+Route::patch('/meetings/{id}', [MeetingController::class, 'update']);
+Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);

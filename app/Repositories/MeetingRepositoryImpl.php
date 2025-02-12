@@ -44,7 +44,14 @@ class MeetingRepositoryImpl implements MeetingRepository
         return $meeting->refresh();
     }
 
-    public function deleteMeeting(int $id): bool{
-        return $this->getById($id)->delete();
+    public function deleteMeeting(int $id): bool
+{
+    $meeting = $this->getById($id);
+
+    if (!$meeting) {
+        return false; // Retorna false si la reunión no existe
     }
+
+    return $meeting->delete();
+}
 }

@@ -55,7 +55,7 @@ class MeetingController extends Controller{
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'status' => 'nullable|string',
+            'status' => 'nullable|string|in:Pendiente,Aceptada,Rechazada',
             'assigned_table' => 'nullable|string|max:50',
             'time' => 'nullable|date_format:Y-m-d H:i:s',
         ]);
