@@ -84,7 +84,9 @@ class UserController extends Controller
             'activity' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
-            'logo_path' => 'nullable|image|mimes:jpeg,png,jpg',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg',
+            'gallery' => 'nullable|array',
+            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $this->repository->update($user instanceof User ? $user : User::find($user->id), $validatedData);
