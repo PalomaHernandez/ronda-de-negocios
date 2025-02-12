@@ -39,6 +39,8 @@ Route::get('/events/{event_id}/meetings', [MeetingController::class, 'getMeeting
 Route::get('/events/{event_id}/meetings/{user_id}', [MeetingController::class, 'getMeetingsByEventAndUser']);
 //Route::get('/events/{event_id}/notifications/{user_id}', [RegistrationController::class, 'getNotifications']); 
 
+Route::get('/events/{slug}/is-registered/{user_id}', [UserController::class, 'isRegistered']);
+
 Route::patch('/user/profile', [UserController::class, 'update']); 
 
 Route::post('/meetings', [MeetingController::class, 'store']);

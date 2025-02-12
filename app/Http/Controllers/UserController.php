@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Registration;
+use App\Models\Event;
 
 class UserController extends Controller
 {
@@ -95,6 +97,16 @@ class UserController extends Controller
             'message' => 'Perfil actualizado correctamente',
             'user' => $user->fresh()
         ]);
+    }
+
+    public function isRegistered($slug, $user_id) {
+        $event_id = Event::where('slug', $slug)->first()->id;
+
+         $isRegistered = Registration::where('participant_id', $user_id)
+                                    ->where('event_id', $event_id)
+                                    ->exists();
+    
+        return response()->json(['registered' => $isRegistered]);
     }
 
     public function destroy($id)
