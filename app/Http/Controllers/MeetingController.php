@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meeting;
+use App\Models\Registration;
+use App\Models\User;
 use App\Repositories\Interfaces\MeetingRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Patterns\State\Meeting\MeetingStatus;
+use App\Models\Notification;
+
 
 class MeetingController extends Controller{
     public function __construct(private readonly MeetingRepository $repository){}
@@ -49,28 +53,70 @@ class MeetingController extends Controller{
         $validatedData['status'] = MeetingStatus::tryFrom($validatedData['status']) ?? MeetingStatus::Pending;
         $meeting = $this->repository->create($validatedData);
 
+        $registration = Registration::where('participant_id', $validatedData['receiver_id'])
+        ->where('event_id', $validatedData['event_id'])
+        ->first();
+
+        $requester = User::find($validatedData['requester_id']);
+
+
         return response()->json($meeting, 201);
     }
 
     public function update(Request $request, $id)
     {
+        $meeting = $this->repository->getById($id);
+
         $validatedData = $request->validate([
             'status' => 'nullable|string|in:Pendiente,Aceptada,Rechazada',
             'assigned_table' => 'nullable|string|max:50',
             'time' => 'nullable|date_format:Y-m-d H:i:s',
         ]);
+        
+        $previousStatus = $meeting->status;
+
         if (isset($validatedData['status'])) {
             $validatedData['status'] = MeetingStatus::tryFrom($validatedData['status']) ?? MeetingStatus::Pending;
         }
-       $meeting = $this->repository->updateMeeting($id,$validatedData);
+        $meeting = $this->repository->updateMeeting($id,$validatedData);
 
-       if (!$meeting) {
-        return response()->json(['message' => 'Meeting not found'], 404);
-       }
+        if (!$meeting) {
+            return response()->json(['message' => 'Meeting not found'], 404);
+        }
+
+        if (isset($validatedData['status']) && $previousStatus !== $validatedData['status']) {
+            $this->notifyParticipants($meeting, $validatedData['status']->value);
+        }
 
         return response()->json($meeting);
     }
 
+    private function notifyParticipants(Meeting $meeting, string $newStatus)
+    {
+        $requester = User::find($meeting->requester_id);
+        $receiver = User::find($meeting->receiver_id);
+    
+        $requesterRegistration = Registration::where('participant_id', $meeting->requester_id)
+            ->where('event_id', $meeting->event_id)
+            ->first();
+    
+        $receiverRegistration = Registration::where('participant_id', $meeting->receiver_id)
+            ->where('event_id', $meeting->event_id)
+            ->first();
+    
+        if ($requester && $receiver && $requesterRegistration && $receiverRegistration) {
+            // Crear el mensaje
+            $statusText = $newStatus === 'Aceptada' ? 'ha sido aceptada' : 'ha sido rechazada';
+            
+            $messageForRequester = "Tu reunión con {$receiver->name} $statusText.";
+            $messageForReceiver = "Tu reunión con {$requester->name} $statusText.";
+    
+            // Enviar notificaciones a ambas partes
+            Notification::createNotification($requesterRegistration->id, $messageForRequester);
+            Notification::createNotification($receiverRegistration->id, $messageForReceiver);
+        }
+    }
+    
     public function destroy($id)
     {
         $isDeleted = $this->repository->deleteMeeting($id);

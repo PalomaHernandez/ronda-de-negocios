@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Notification;
 
 class Registration extends Model
 {
@@ -31,5 +32,10 @@ class Registration extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 }

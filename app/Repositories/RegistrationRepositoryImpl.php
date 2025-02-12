@@ -29,11 +29,11 @@ class RegistrationRepositoryImpl implements RegistrationRepository
     public function deleteRegistration(int $id): bool{
         return $this->getById($id)->delete();
     }
-    /*
-    public function getNotifications(int $event_id, int $user_id) {
+
+    public function getNotifications(int $event_id, int $user_id): Collection {
         return Registration::where('event_id', $event_id)
                            ->where('participant_id', $user_id)
-                           ->first()?->notifications; 
+                           ->first()?->notifications ?? collect();
     }
-    */
+
 }

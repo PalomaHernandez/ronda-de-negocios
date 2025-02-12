@@ -114,7 +114,7 @@ class RegistrationController extends Controller
 
         return response()->json($participants);
     }
-    /*
+
     public function getNotifications($event_id, $user_id) {
         // Usar el método del repositorio
         $notifications = $this->repository->getNotifications($event_id, $user_id);
@@ -126,5 +126,5 @@ class RegistrationController extends Controller
 
         return response()->json($notifications);
     }
-*/
+
 }
