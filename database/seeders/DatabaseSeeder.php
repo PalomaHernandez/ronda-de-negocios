@@ -65,7 +65,6 @@ class DatabaseSeeder extends Seeder
                 Registration::create([
                     'participant_id' => $participant->id,
                     'event_id' => $event->id,
-                    'inscription_date' => now(),
                     'interests' => 'Intereses de prueba',
                     'products_services' => 'Productos de prueba',
                     'remaining_meetings' => 5,

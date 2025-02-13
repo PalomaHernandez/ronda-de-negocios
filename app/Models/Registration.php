@@ -14,6 +14,8 @@ class Registration extends Model
     use HasFactory, Notifiable;
 
     protected $fillable = [
+        'participant_id',
+        'event_id',
         'inscription_date',
         'interests',
         'products_services',

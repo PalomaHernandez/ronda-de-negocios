@@ -16,6 +16,8 @@ interface UserRepository {
 
 	public function createOrUpdateResponsible(array $data):User;
 
+	public function deleteImages(array $images): void;
+
 	public function update(User $user, array $validatedData ):void;
 
 	public function destroy(int $id):?bool;

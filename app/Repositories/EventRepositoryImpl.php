@@ -22,7 +22,11 @@ class EventRepositoryImpl implements EventRepository
         return Event::find($id);
     }
     public function getByName(string $name):Event|Model{
-        return Event::with('files')->where('slug', $name)->first();
+       $event = Event::with('files')->where('slug', $name)->first();
+       if (!$event) {
+        throw new \Exception("Evento '$name' no encontrado");
+        }
+        return $event;
     }
     public function create(array $data, User $responsible): void{
         Event::create([

@@ -70,8 +70,9 @@ class UserController extends Controller
         }
     }
 
-
-
+    public function deleteImages(array $images){
+        $this->repository->deleteImages($images);
+    }
 
     public function update()
     {

@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/logout', [LoginController::class, 'logout']);
+    Route::get('/events/{id}/registration', [RegistrationController::class, 'store']);
 });
 //Route::middleware('guest')->post('/register', [LoginController::class, 'store']);
 //Route::middleware(['web'])->group(function () {
@@ -34,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [UserController::class, 'store']);
 
-Route::get('/events/{id}/participants', [RegistrationController::class, 'getParticipants']); 
+Route::get('/events/{id}/participants', [RegistrationController::class, 'getParticipants']);  
 Route::get('/events/{event_id}/meetings', [MeetingController::class, 'getMeetingsByEvent']);
 Route::get('/events/{event_id}/meetings/{user_id}', [MeetingController::class, 'getMeetingsByEventAndUser']);
 Route::get('/events/{event_id}/notifications/{user_id}', [RegistrationController::class, 'getNotifications']); 

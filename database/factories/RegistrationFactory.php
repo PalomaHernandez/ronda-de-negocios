@@ -18,7 +18,6 @@ class RegistrationFactory extends Factory {
 				$query->where('name', 'participant');
 			})->inRandomOrder()->first('id')->id,
             'event_id' => Event::inRandomOrder()->first('id')->id,
-            'inscription_date' => now(),
             'interests' => $this->faker->sentence,
             'products_services' => $this->faker->sentence,
             'remaining_meetings' => 5,

@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\UploadImages;
 use App\Http\Controllers\Controller;
 use App\Models\Registration;
 use App\Repositories\Interfaces\RegistrationRepository;
+use App\Repositories\Interfaces\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrationController extends Controller
 {
 
-    public function __construct(private readonly RegistrationRepository $repository)
+    public function __construct(private readonly RegistrationRepository $repository, private readonly UserRepository $userRepository)
     {
     }
 
@@ -36,20 +40,34 @@ class RegistrationController extends Controller
         return response()->json($registration);
     }
 
-    public function store(Request $request)
+    public function store($event_id)
     {
-        $validatedData = $request->validate([
-            'participant_id' => 'required|exists:users,id',
-            'event_id' => 'required|exists:events,id',
-            'inscription_date' => 'required|date', //Fecha automatica en la bd
+        Log::info('Todo la request', request()->all());
+        $validatedData = request()->validate([
             'interests' => 'nullable|string',
             'products_services' => 'nullable|string',
             'remaining_meetings' => 'nullable|integer',
+            'gallery' => 'nullable|array',
+            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $registration = $this->repository->create($validatedData);
+        $validatedData['participant_id'] = Auth::user()->id;
+        $validatedData['event_id'] = $event_id;
 
-        return response()->json($registration, 201);
+        Log::info($validatedData);
+
+        $this->repository->create($validatedData);
+
+        $deleted_images = request()->input('deleted_files', []);
+        if($deleted_images){
+            $this->userRepository->deleteImages($deleted_images);
+        }
+        
+        if(request()->hasFile('gallery')){
+            UploadImages::execute($validatedData['participant_id'], 'gallery');
+        }
+
+        return response()->json("Inscripcion exitosa", 201);
     }
 
     public function update(Request $request, $id)
@@ -98,13 +116,10 @@ class RegistrationController extends Controller
                 'location' => $registration->participant->location,
                 'website' => $registration->participant->website,
                 'logo_path' => $registration->participant->logo_path
-                    ? url('storage/' . $registration->participant->logo_path)
+                    ?  $registration->participant->logo_path
                     : null,
                 'profile_images' => $registration->participant->images->isNotEmpty()
-                    ? $registration->participant->images->transform(function ($file) {
-                        $file->file_url = url('storage/' . $file->path);
-                        return $file;
-                    })
+                    ? $registration->participant->images
                     : null,
                 'interests' => $registration->interests,
                 'product_services' => $registration->products_services,

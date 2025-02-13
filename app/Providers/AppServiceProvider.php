@@ -40,6 +40,10 @@ class AppServiceProvider extends ServiceProvider
 			->needs(RegistrationRepository::class)
 			->give(RegistrationRepositoryImpl::class);
 
+        $this->app->when(RegistrationController::class)
+			->needs(UserRepository::class)
+			->give(UserRepositoryImpl::class);
+
 		$this->app->when(UserController::class)
 			->needs(UserRepository::class)
 			->give(UserRepositoryImpl::class);
