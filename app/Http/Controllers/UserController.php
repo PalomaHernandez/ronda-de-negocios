@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Registration;
 use App\Models\Event;
+use App\Actions\UploadImages;
 
 class UserController extends Controller
 {
@@ -90,17 +91,24 @@ class UserController extends Controller
             'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Si 'name' es nulo, asignamos "aaa"
-        if (!isset($validatedData['name']) || is_null($validatedData['name'])) {
-            $validatedData['name'] = 'eee';
+        $deleted_images = request()->input('deleted_images', []);
+        if($deleted_images){
+            $this->deleteImages($deleted_images);
         }
-        
-        // Actualizamos el usuario directamente
+
+        if(request()->hasFile('logo')){
+            UploadImages::execute($user instanceof User ? $user : User::find($user->id), 'logo');
+        }
+
+        if(request()->hasFile('gallery')){
+            UploadImages::execute($user, 'gallery');
+        }
+
         $user->update($validatedData);
 
         return response()->json([
             'message' => 'Perfil actualizado correctamente',
-            'user' => $user->fresh()
+            'user' => $user->fresh()->load('images')
         ]);
     }
 
