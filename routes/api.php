@@ -42,7 +42,7 @@ Route::get('/events/{event_id}/notifications/{user_id}', [RegistrationController
 
 Route::get('/events/{slug}/is-registered/{user_id}', [UserController::class, 'isRegistered']);
 
-Route::patch('/user/profile', [UserController::class, 'update']); 
+Route::middleware('auth:sanctum')->patch('/user/profile', [UserController::class, 'update']);
 
 Route::post('/meetings', [MeetingController::class, 'store']);
 Route::patch('/meetings/{id}', [MeetingController::class, 'update']);

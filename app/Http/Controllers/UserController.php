@@ -74,16 +74,17 @@ class UserController extends Controller
         $this->repository->deleteImages($images);
     }
 
-    public function update()
+    public function update(Request $request)
     {
         $user = Auth::user();
 
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
-
-        $validatedData = request()->validate([
-            'name' => 'required|string|max:255',
+    
+        // Validamos los datos
+        $validatedData = $request->validate([
+            'name' => 'nullable|string|max:255',
             'activity' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
@@ -92,7 +93,13 @@ class UserController extends Controller
             'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $this->repository->update($user instanceof User ? $user : User::find($user->id), $validatedData);
+        // Si 'name' es nulo, asignamos "aaa"
+        if (!isset($validatedData['name']) || is_null($validatedData['name'])) {
+            $validatedData['name'] = 'eee';
+        }
+        
+        // Actualizamos el usuario directamente
+        $user->update($validatedData);
 
         return response()->json([
             'message' => 'Perfil actualizado correctamente',
