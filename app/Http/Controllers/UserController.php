@@ -18,11 +18,8 @@ class UserController extends Controller
 
     public function index()
     {
-        $user = User::find(auth()->id());
-        if (request()->expectsJson()) {
-            return response()->json($user);
-        }
-        return view('users.index', compact('user'));
+        $user = User::find(auth()->id())->load('images');
+        return response()->json($user);
     }
 
 

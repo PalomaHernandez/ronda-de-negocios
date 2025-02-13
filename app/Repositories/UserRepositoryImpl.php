@@ -5,6 +5,7 @@ use App\Repositories\Interfaces\UserRepository;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Image;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Actions\UploadImages;
@@ -51,10 +52,13 @@ class UserRepositoryImpl implements UserRepository
 	}
 
 	public function deleteImages(array $images): void{
-		foreach ($images as $image) {
-			Storage::delete($image->path);
-			$image->delete();
-		}
+		foreach ($images as $imageId) {
+            $image = Image::find($imageId);
+            if ($image) {
+                Storage::delete($image->path);
+                $image->delete();
+            }
+        }
 	}
 
 	public function createOrUpdateResponsible(array $data): User
@@ -87,7 +91,7 @@ class UserRepositoryImpl implements UserRepository
 		]);
 	}
 
-	public function update(User $user, array $validatedData ): void
+	public function update(User $user, array $validatedData): void
 	{
 		$user->update($validatedData);
 	}

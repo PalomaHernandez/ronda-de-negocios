@@ -42,7 +42,6 @@ class RegistrationController extends Controller
 
     public function store($event_id)
     {
-        Log::info('Todo la request', request()->all());
         $validatedData = request()->validate([
             'interests' => 'nullable|string',
             'products_services' => 'nullable|string',
@@ -51,10 +50,9 @@ class RegistrationController extends Controller
             'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $validatedData['participant_id'] = Auth::user()->id;
+        $user = Auth::user();
+        $validatedData['participant_id'] = $user->id;
         $validatedData['event_id'] = $event_id;
-
-        Log::info($validatedData);
 
         $this->repository->create($validatedData);
 
@@ -63,8 +61,9 @@ class RegistrationController extends Controller
             $this->userRepository->deleteImages($deleted_images);
         }
         
-        if(request()->hasFile('gallery')){
-            UploadImages::execute($validatedData['participant_id'], 'gallery');
+        if(request()->hasFile(key: 'gallery')){
+            Log::info('Subiendo imagenes');
+            UploadImages::execute($user instanceof \App\Models\User ? $user : null, 'gallery');
         }
 
         return response()->json("Inscripcion exitosa", 201);

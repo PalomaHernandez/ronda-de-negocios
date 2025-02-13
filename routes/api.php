@@ -21,12 +21,10 @@ Route::prefix('events')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return response()->json($request->user());
-    });
+    Route::get('/user', [UserController::class, 'index']);
 
     Route::post('/logout', [LoginController::class, 'logout']);
-    Route::get('/events/{id}/registration', [RegistrationController::class, 'store']);
+    Route::post('/events/{id}/registration', [RegistrationController::class, 'store']);
 });
 //Route::middleware('guest')->post('/register', [LoginController::class, 'store']);
 //Route::middleware(['web'])->group(function () {
