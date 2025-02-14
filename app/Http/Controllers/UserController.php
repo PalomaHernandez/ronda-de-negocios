@@ -82,7 +82,7 @@ class UserController extends Controller
     
         // Validamos los datos
         $validatedData = $request->validate([
-            'name' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
             'activity' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',

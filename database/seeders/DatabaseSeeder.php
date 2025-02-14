@@ -11,66 +11,176 @@ use App\Models\Image;
 use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-
-    protected static $password;
-    public function run(): void{
-        foreach(config('roles') as $roleName => $abilities){
-			$role = BouncerFacade::role()->create([
-				'name' => Str::slug($roleName),
-				'title' => $roleName
-			]);
-			BouncerFacade::allow($role)->to($abilities);
-		}
-        $users = User::factory(10)->create();
-        foreach ($users as $index => $user) {
-            if ($index < 2) {
-            $user->assign('responsible');
-            } else {
-            $user->assign('participant');
-            }
+    public function run(): void
+    {
+        // Crear roles con sus permisos
+        foreach (config('roles') as $roleName => $abilities) {
+            $role = BouncerFacade::role()->create([
+                'name' => Str::slug($roleName),
+                'title' => $roleName
+            ]);
+            BouncerFacade::allow($role)->to($abilities);
         }
+
+        // Crear un administrador
         $admin = User::create([
-            'name' => 'Administrador', 
+            'name' => 'Administrador',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('admin'),
         ]);
         $admin->assign('administrator');
-        
-        Event::factory(3)->create();
-        File::factory(10)->create();
-        Image::factory(10)->create();
-        Meeting::factory(10)->create();
-        $participants = User::whereHas('roles', function ($query) {
-            $query->where('name', 'participant');
-        })->get();
-        
-        $events = Event::all();
-        $max_registrations = min($participants->count() * $events->count(), 20); // Máximo 20 inscripciones
-    
-        $registrations = [];
-        while (count($registrations) < $max_registrations) {
-            $participant = $participants->random();
-            $event = $events->random();
-    
-            // Evitar duplicados
-            if (!in_array([$participant->id, $event->id], $registrations)) {
+
+        // Crear responsables y participantes
+        $users = collect([
+            [
+                'name' => 'Juan Pérez',
+                'email' => 'juan.perez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Desarrollo de software',
+            ],
+            [
+                'name' => 'María Gómez',
+                'email' => 'maria.gomez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Empresa textil',
+            ],
+            [
+                'name' => 'Carlos López',
+                'email' => 'carlos.lopez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Industria petrolera',
+            ],
+            [
+                'name' => 'Juan Fernández',
+                'email' => 'juan.fernandez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Industria alimenticia',
+            ],
+            [
+                'name' => 'Carlos Fernández',
+                'email' => 'carlos.fernandez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Industria alimenticia',
+            ],
+            [
+                'name' => 'Martin Fernández',
+                'email' => 'martin.fernandez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Industria alimenticia',
+            ],
+            [
+                'name' => 'Ana Lopez',
+                'email' => 'ana.lopez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Industria petrolera',
+            ],
+            [
+                'name' => 'Israel Fernández',
+                'email' => 'israel.fernandez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Industria alimenticia',
+            ],
+            [
+                'name' => 'Luis Fernández',
+                'email' => 'luis.fernandez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Industria alimenticia',
+            ],
+            [
+                'name' => 'Paola Fernández',
+                'email' => 'paola.fernandez@gmail.com',
+                'password' => Hash::make('password'),
+                'activity' => 'Industria alimenticia',
+            ]
+        ])->map(function ($userData) {
+            $user = User::factory()->create($userData);
+            $user->assign('participant');
+            return $user;
+        });
+
+        $responsible = User::create([
+            'name' => 'Responsable',
+            'email' => 'responsable@gmail.com',
+            'password' => Hash::make('responsable'),
+        ]);
+        $responsible->assign('responsible');
+
+        // Crear eventos con datos reales
+        $events = collect([
+            [
+                'title' => 'Congreso de Tecnología 2025',
+                'description' => 'Un evento para conocer las últimas tendencias en tecnología.',
+                'location' => 'Centro de Convenciones, Buenos Aires',
+                'date' => now()->addMonths(2),
+                'starts_at' => '09:00:00',
+                'ends_at' => '17:00:00',
+                'inscription_end_date' => '2025-05-10',
+                'matching_end_date' => '2025-05-17',
+                'logo_path' => 'http://127.0.0.1:8000/storage/images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
+                'slug' => Str::slug('Congreso de Tecnología 2025'),
+                'responsible_id' => $responsible->id,
+            ],
+            [
+                'title' => 'Feria de Innovación',
+                'description' => 'Espacio para startups y emprendedores tecnológicos.',
+                'location' => 'Hotel Hilton, Ciudad de México',
+                'date' => now()->addMonths(3),
+                'inscription_end_date' => '2025-05-10',
+                'matching_end_date' => '2025-05-17',
+                'starts_at' => '09:00:00',
+                'ends_at' => '17:00:00',
+                'logo_path' => 'http://127.0.0.1:8000/storage/images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
+                'slug' => Str::slug('Feria de Innovación'),
+                'responsible_id' => $responsible->id,
+            ],
+            [
+                'title' => 'Cumbre Empresarial 2025',
+                'description' => 'Reunión de líderes del sector empresarial para discutir el futuro.',
+                'location' => 'WTC, Madrid',
+                'inscription_end_date' => '2025-05-10',
+                'matching_end_date' => '2025-05-17',
+                'date' => now()->addMonths(1),
+                'starts_at' => '09:00:00',
+                'ends_at' => '17:00:00',
+                'logo_path' => 'http://127.0.0.1:8000/storage/images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
+                'slug' => Str::slug('Cumbre Empresarial 2025'),
+                'responsible_id' => $responsible->id,
+            ]
+        ])->map(fn ($eventData) => Event::create($eventData));
+
+        // Inscribir participantes a eventos
+        $participants = User::whereHas('roles', fn ($q) => $q->where('name', 'participant'))->get();
+        foreach ($participants as $participant) {
+            foreach ($events->random(1) as $event) {
                 Registration::create([
                     'participant_id' => $participant->id,
                     'event_id' => $event->id,
-                    'interests' => 'Intereses de prueba',
-                    'products_services' => 'Productos de prueba',
-                    'remaining_meetings' => 5,
+                    'interests' => 'Tecnología, IA, Blockchain',
+                    'products_services' => 'Consultoría en la industria',
+                    'remaining_meetings' => rand(3, 10),
                 ]);
-                $registrations[] = [$participant->id, $event->id]; // Guardar combinaciones creadas
             }
+        }
+
+ 	File::factory(10)->create();
+	Image::factory(10)->create();
+
+
+        $meetings = [
+            ['title' => 'Reunión de Networking', 'reason' => 'Intercambio de ideas y colaboración'],
+            ['title' => 'Mesa Redonda de Innovación', 'reason' => 'Discusión sobre tendencias del sector'],
+            ['title' => 'Workshop de IA', 'reason' => 'Taller práctico sobre inteligencia artificial'],
+        ];
+
+        foreach ($meetings as $meetingData) {
+            Meeting::factory()->create([
+                'reason' => $meetingData['title'],
+            ]);
         }
     }
 }

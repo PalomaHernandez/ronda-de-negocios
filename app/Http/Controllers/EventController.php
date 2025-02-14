@@ -157,20 +157,11 @@ public function update(Request $request, int $id)
 
 
 
-    public function destroy(Request $request)
+    public function destroy($event_id)
     {
-        try {
-            $request->validate([
-                'delete_title' => 'required|string',
-            ]);    
-        } catch (ValidationException $e) {
-            return redirect()->back()
-                ->withErrors($e->errors()) 
-                ->with('error', 'Debe ingresar un titulo de evento válido.');
-        }
-
-        $this->repository->deleteByTitle(
-            $request->delete_title
+        
+        $this->repository->delete(
+            $event_id
         );
 
         return redirect()->route('home')->with('success', 'Evento eliminado exitosamente.');

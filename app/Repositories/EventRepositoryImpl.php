@@ -68,10 +68,6 @@ class EventRepositoryImpl implements EventRepository
         $this->getById($id)->delete();
     }
 
-    public function deleteByTitle(string $event_title): void{
-        Event::where('title', $event_title)->delete();
-    }
-
     public function addFileToEvent(int $event_id, array $fileData): void{}
     public function getFilesByEvent(int $event_id): void{}
 

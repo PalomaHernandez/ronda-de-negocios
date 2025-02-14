@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-
+use App\Http\Middleware\AdminMiddleware;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 
@@ -26,7 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Illuminate\Session\Middleware\AuthenticateSession::class,
         ]);
-     
+
+        $middleware->alias([
+            'admin' => AdminMiddleware::class
+        ]);
         $middleware->group('api', [
             EnsureFrontendRequestsAreStateful::class,
             ThrottleRequests::class, 

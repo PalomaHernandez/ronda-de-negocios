@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
@@ -18,45 +17,29 @@ class LoginController extends Controller
 
 	public function login(Request $request)
 	{
-		$credentials = $request->validate([
-			'email' => 'required|email',
-			'password' => 'required',
-		]);
-	
-		if (!Auth::attempt($credentials)) {
-			return response()->json(['message' => 'Invalid credentials'], 401);
-		}
-	
-		$user = Auth::user()->load('images');
-
-		// 🔹 Generar un token con Sanctum
-		$token = $user->createToken('auth_token')->plainTextToken;
-	
-		return response()->json([
-			'user' => $user,
-			'role' => $user->roles->pluck('name'),
-			'token' => $token, // 🔹 Devolver el token aquí
-		]);
-	}
-	
-
-	public function attempt()
-	{
 		$this->validateLogin();
 
-		if ($this->attemptLogin()) {
-			return $this->sendLoginResponse();
+		if (!Auth::attempt($this->credentials())) {
+			if(request()->expectsJson()){
+				return response()->json(['message' => 'Invalid credentials'], 401);
+			}
+			return redirect()->back()->with('error', 'Credenciales inválidas.');
 		}
 
-		if (request()->expectsJson()) {
+		$user = Auth::user()->load('images');
+		Log::info('User logged in', ['user' => $user]);
+
+		$token = $user->createToken('auth_token')->plainTextToken;
+
+		if(request()->expectsJson()){
 			return response()->json([
-				'res' => false,
-				'text' => 'No se ha podido iniciar sesión.',
+				'user' => $user,
+				'role' => $user->roles->pluck('name'),
+				'token' => $token,
 			]);
 		}
-		return back()->withErrors([
-			'email' => 'Los datos ingresados son incorrectos.',
-		]);
+
+		return redirect()->route('home');
 	}
 
 	protected function validateLogin(): void
@@ -77,45 +60,21 @@ class LoginController extends Controller
 		return request()->only('email', 'password');
 	}
 
-	protected function sendLoginResponse()
-	{
-		Log::error('Session middleware is active:', ['hasSession' => request()->hasSession()]);
-		Log::error('Authenticated User:', ['user' => auth()->user()]);
-		request()->session()->regenerate();
-		if (request()->expectsJson()) {
-			return response()->json([
-				'res' => true,
-				'text' => 'Inicio de sesión exitoso',
-				'user' => request()->user(),
-				'roles' => request()->user()->roles->pluck('name')
-			]);
-		}
-		return redirect()->route('home');
-	}
-
 	public function logout(Request $request)
-{
-    $user = Auth::user();
-    
-    if (!$user) {
-        return response()->json(['message' => 'No estás autenticado'], 401);
-    }
-
-    // 🔹 Revocar todos los tokens del usuario
-    $user->tokens()->delete();
-
-    return response()->json(['message' => 'Logout exitoso']);
-}
-
-	protected function loggedOut()
 	{
-		if (request()->expectsJson()) {
-			return response()->json([
-				'res' => true,
-				'text' => 'Cierre de sesión exitoso',
-			]);
+		$user = Auth::user();
+		Log::info('User logged out', ['user' => $user]);
+
+		if (!$user) {
+			return response()->json(['message' => 'Usuario no autenticado.'], 401);
 		}
+
+		if (request()->expectsJson()) {
+			$user->tokens()->delete();
+			return response()->json(['message' => 'Cierre de sesión exitoso']);
+		}
+
+		Auth::logout();
 		return redirect()->route('login');
 	}
-
 }

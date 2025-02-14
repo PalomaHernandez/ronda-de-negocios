@@ -15,15 +15,15 @@
             <h1 class="text-xl font-bold text-gray-800">Rondas UNS Admin</h1>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition">
-                    Cerrar sesion
+                <button type="submit" class="btn">
+                    Cerrar sesión
                 </button>
             </form>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="container mx-auto mt-24 px-4">
+    <!-- Contenido Principal -->
+    <main class="container mx-auto mt-28 px-4">
         <!-- Mensajes de sesión -->
         @if (session('error'))
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -45,17 +45,23 @@
                         <th class="py-3 px-6 text-left">Nombre del Evento</th>
                         <th class="py-3 px-6 text-left">Fecha</th>
                         <th class="py-3 px-6 text-left">Estado</th>
+                        <th class="py-3 px-6 text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
                     @foreach ($events as $event)
                         <tr class="border-b border-gray-200 hover:bg-gray-100">
                             <td class="py-3 px-6">{{ $event->title }}</td>
-                            <td class="py-3 px-6">{{ $event->date }}</td>
+                            <td class="py-3 px-6">{{ \Carbon\Carbon::parse($event->date)->format('d-m-Y') }}</td>
                             <td class="py-3 px-6">
                                 <span class="bg-blue-500 text-white py-1 px-3 rounded-full text-xs">
                                     {{ $event->status ?? 'N/A' }}
                                 </span>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <button class="text-red-500 hover:text-red-700" onclick="confirmDelete({{ $event->id }})">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -63,108 +69,109 @@
             </table>
         </div>
 
-        <!-- Botones para abrir el modal -->
+        <!-- Botón Crear Evento -->
         <div class="flex justify-end mt-6">
-            <!-- Botón Crear Evento -->
-            <button class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
-                onclick="openModal('createEventModal')">
+            <button class="btn-create" onclick="openModal('createEventModal')">
                 Crear Evento
             </button>
-            <!-- Botón Eliminar Evento -->
-            <button class="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition ml-4"
-                onclick="openModal('deleteEventModal')">
-                Eliminar Evento
-            </button>
         </div>
-    </div>
 
-   <!-- Modal Crear Evento -->
-<div id="createEventModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
-        <!-- Botón de cierre en la esquina superior derecha -->
-        <button onclick="closeModal('createEventModal')" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
-            ✖
-        </button>
-
-        <h2 class="text-xl font-bold mb-4">Crear Evento</h2>
-        <form action="{{ route('events.create') }}" method="POST">
-            @csrf
-            <!-- Título del Evento -->
-            <div class="mb-4">
-                <label for="title" class="block text-sm font-medium text-gray-700">Título</label>
-                <input type="text" class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 px-2" id="title" name="title" required />
-            </div>
-            <!-- Fecha del Evento -->
-            <div class="mb-4">
-                <label for="date" class="block text-sm font-medium text-gray-700">Fecha</label>
-                <input type="date" class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 px-2" id="date" name="date" required />
-            </div>
-
-            <!-- Asignar Responsable -->
-            <hr class="my-4">
-            <div class="p-3 border rounded">
-                <h3 class="font-semibold text-gray-700 mb-2">Asignar Responsable</h3>
-                <!-- Email del Responsable -->
-                <div class="mb-4">
-                    <label for="responsibleEmail" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 px-2" id="responsibleEmail" name="responsible_email" required />
-                </div>
-                <!-- Contraseña del Responsable -->
-                <div class="mb-4">
-                    <label for="responsiblePassword" class="block text-sm font-medium text-gray-700">Contraseña</label>
-                    <input type="password" class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 px-2" id="responsiblePassword" name="responsible_password" required />
-                </div>
-                <!-- Confirmar Contraseña -->
-                <div class="mb-4">
-                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirmar Contraseña</label>
-                    <input type="password" class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 px-2" id="confirmPassword" name="responsible_password_confirmation" required />
-                </div>
-            </div>
-
-            <div class="flex justify-end mt-3">
-                <!-- Botón Cancelar -->
-                <button type="button" onclick="closeModal('createEventModal')" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2">
-                    Cancelar
-                </button>
-                <!-- Botón Crear -->
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                    Crear
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-    <!-- Modal Eliminar Evento -->
-    <div id="deleteEventModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
-            <button onclick="closeModal('deleteEventModal')"
-                class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
-                ✖
-            </button>
-            <h2 class="text-xl font-bold mb-4">Eliminar Evento</h2>
-            <form id="deleteEventForm" action="{{ route('events.delete') }}" method="POST">
-                @csrf
-                <div class="mb-4">
-                    <label for="eventTitleToDelete" class="block text-sm font-medium text-gray-700 mb-2">Ingrese el título
-                        del evento</label>
-                    <input type="text" class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 px-2" id="eventTitleToDelete"
-                        name="delete_title" required />
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" onclick="closeModal('deleteEventModal')"
-                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2">
-                        Cancelar
+        <!-- Modales -->
+        <div id="modals">
+            <!-- Modal Crear Evento -->
+            <div id="createEventModal"
+                class="absolute top-16 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+                <div class="bg-white p-6 rounded shadow-lg w-1/3 relative mt-10 mb-10">
+                    <button onclick="closeModal('createEventModal')"
+                        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                        <i class="fa-solid fa-xmark text-xl"></i>
                     </button>
-                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-                        Eliminar
-                    </button>
+
+                    <h2 class="text-xl font-bold mb-4">Crear Evento</h2>
+                    <form action="{{ route('events.create') }}" method="POST">
+                        @csrf
+                        <div class="labeled-input">
+                            <label for="title" class="label">Título</label>
+                            <input type="text" id="title"
+                                name="title" required />
+                        </div>
+
+                        <div class="labeled-input">
+                            <label for="date" class="label">Fecha</label>
+                            <input type="date" id="date"
+                                name="date" required />
+                        </div>
+                        <!-- Asignar Responsable -->
+                        <hr class="my-4">
+                        <div class="p-3 border rounded">
+                            <h3 class="font-semibold text-gray-700 mb-2">Asignar Responsable</h3>
+                            <!-- Email del Responsable -->
+                            <div class="labeled-input">
+                                <label for="responsibleEmail"
+                                    class="label">Email</label>
+                                <input type="email"
+                                    id="responsibleEmail" name="responsible_email" required />
+                            </div>
+                            <!-- Contraseña del Responsable -->
+                            <div class="labeled-input">
+                                <label for="responsiblePassword"
+                                    class="label">Contraseña</label>
+                                <input type="password"
+                                    
+                                    id="responsiblePassword" name="responsible_password" required />
+                            </div>
+                            <!-- Confirmar Contraseña -->
+                            <div class="labeled-input">
+                                <label for="confirmPassword" class="label">Confirmar
+                                    Contraseña</label>
+                                <input type="password"
+                                    id="confirmPassword" name="responsible_password_confirmation" required />
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end mt-3">
+                            <button type="button" onclick="closeModal('createEventModal')"
+                                class="btn mr-2">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn">
+                                Crear
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+
+            <!-- Modal Confirmar Eliminación -->
+            <div id="deleteEventModal"
+                class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+                <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
+                    <button onclick="closeModal('deleteEventModal')"
+                        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                    <h2 class="text-xl font-bold mb-4">Confirmar eliminación</h2>
+                    <p class="mb-4">¿Estás seguro de que deseas eliminar este evento?</p>
+                    <form id="deleteEventForm" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <input type="hidden" id="deleteEventId" name="event_id">
+                        <div class="flex justify-end">
+                            <button type="button" onclick="closeModal('deleteEventModal')"
+                                class="bg-gray-500 text-white px-4 py-2 rounded mr-2">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">
+                                Eliminar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Script para abrir y cerrar modales -->
+    <!-- Scripts -->
     <script>
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
@@ -173,6 +180,13 @@
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
         }
+
+        function confirmDelete(eventId) {
+            const form = document.getElementById('deleteEventForm');
+            form.action = `/events/delete/${eventId}`;
+            openModal('deleteEventModal');
+        }
+
     </script>
 </body>
 
