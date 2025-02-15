@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CronogramaController;
 
 Route::middleware(['auth', 'admin'])->group(function (){
     Route::get('/', [EventController::class, 'index'])->name('home');
@@ -11,6 +12,9 @@ Route::middleware(['auth', 'admin'])->group(function (){
     Route::get('/create-event', [EventController::class, 'createEventModal'])->name('events.createModal');
     Route::get('/delete-event', [EventController::class, 'deleteEventModal'])->name('events.deleteModal');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/cronograma/{eventId}', [CronogramaController::class, 'generarPDFtotal']);
+    Route::get('/cronograma/{eventId}/{userId}',[CronogramaController::class, 'generarPDFparticipante']
+);
 });
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
