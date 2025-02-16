@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Meeting;
-use App\Models\Registration;  // Importamos el modelo Registration
-use App\Models\User;  // Importamos el modelo User
+use App\Models\Registration; 
+use App\Models\User; 
 use PDF;
 
 class CronogramaController extends Controller

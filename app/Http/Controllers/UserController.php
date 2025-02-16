@@ -112,10 +112,12 @@ class UserController extends Controller
         ]);
     }
 
-    public function isRegistered($slug, $user_id) {
+    public function isRegistered($slug) {
         $event_id = Event::where('slug', $slug)->first()->id;
 
-         $isRegistered = Registration::where('participant_id', $user_id)
+        $user = Auth::user();
+
+         $isRegistered = Registration::where('participant_id', $user->id)
                                     ->where('event_id', $event_id)
                                     ->exists();
     

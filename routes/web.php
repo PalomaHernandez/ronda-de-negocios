@@ -14,6 +14,7 @@ Route::middleware(['auth', 'admin'])->group(function (){
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/cronograma/{eventId}', [CronogramaController::class, 'generarPDFtotal']);
     Route::get('/cronograma/{eventId}/{userId}',[CronogramaController::class, 'generarPDFparticipante']);
+    Route::patch('/events/start-matching/{eventId}', [EventController::class, 'startMatchingPhase'])->name('events.startMatching');
     Route::patch('/events/end-matching/{eventId}', [EventController::class, 'endMatchingPhase'])->name('events.endMatching');
 });
 

@@ -134,6 +134,19 @@ class EventController extends Controller {
         return redirect()->route('home')->with('success', 'Evento eliminado exitosamente.');
     }
 
+    public function startMatchingPhase(int $event_id){
+        $event = Event::find($event_id);
+
+        if (!$event) {
+            return response()->json(['message' => 'Evento no encontrado'], 404);
+        }
+
+        $event->status = EventStatus::Matching;
+        $event->save();
+
+        return redirect()->route('home')->with('success', 'Fase de matching iniciada correctamente.');
+    }
+
     public function endMatchingPhase(int $eventId)
     {
         $event = Event::find($eventId);

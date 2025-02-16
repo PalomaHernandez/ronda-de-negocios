@@ -4,11 +4,11 @@ namespace App\Patterns\State\Event;
 
 enum EventStatus:string {
 
-	case Registration = 'Inscripcion'; //Inscripción
+	case Registration = 'Inscripcion'; 
 
-	case Matching = 'Matcheo'; //Matcheo
+	case Matching = 'Matcheo'; 
 
-	case Ended = 'Terminada'; //Terminada
+	case Ended = 'Terminado';
 
 
 	/*public function canUpdate():bool{
