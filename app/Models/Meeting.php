@@ -21,9 +21,7 @@ class Meeting extends Model
         'time'
     ];
 
-    protected $casts = [
-        'time' => 'datetime',
-	];
+
     // ✅ Convierte el string de la base de datos en un objeto Enum automáticamente
     public function getStatusAttribute($value): MeetingStatus
     {

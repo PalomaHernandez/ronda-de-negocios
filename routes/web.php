@@ -13,8 +13,8 @@ Route::middleware(['auth', 'admin'])->group(function (){
     Route::get('/delete-event', [EventController::class, 'deleteEventModal'])->name('events.deleteModal');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/cronograma/{eventId}', [CronogramaController::class, 'generarPDFtotal']);
-    Route::get('/cronograma/{eventId}/{userId}',[CronogramaController::class, 'generarPDFparticipante']
-);
+    Route::get('/cronograma/{eventId}/{userId}',[CronogramaController::class, 'generarPDFparticipante']);
+    Route::patch('/events/end-matching/{eventId}', [EventController::class, 'endMatchingPhase'])->name('events.endMatching');
 });
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');

@@ -62,6 +62,20 @@
                                 <button class="text-red-500 hover:text-red-700" onclick="confirmDelete({{ $event->id }})">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
+                                <!-- Botones condicionales -->
+
+                                    <button class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600" onclick="startMatching({{ $event->id }})">
+                                        Comenzar periodo de matcheo
+                                    </button>
+
+                                    <button class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600" onclick="confirmEndMatching({{ $event->id }})">
+                                        Terminar periodo de matcheo
+                                    </button>
+
+                                    <button onclick="window.location.href='/cronograma/{{ $event->id }}'" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                                        Ver cronograma
+                                    </button>
+
                             </td>
                         </tr>
                     @endforeach
@@ -169,6 +183,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Confirmar Terminar Periodo de Matcheo -->
+        <div id="endMatchingModal"
+            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
+                <button onclick="closeModal('endMatchingModal')"
+                    class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+                <h2 class="text-xl font-bold mb-4">Confirmar Terminación</h2>
+                <p class="mb-4">¿Estás seguro de que deseas terminar el periodo de matcheo para este evento?</p>
+                <form id="endMatchingForm" method="POST">
+                    @csrf
+                    @method('PATCH') <!-- Usualmente se utiliza PATCH para este tipo de cambios -->
+                    <input type="hidden" id="endMatchingEventId" name="event_id">
+                    <div class="flex justify-end">
+                        <button type="button" onclick="closeModal('endMatchingModal')"
+                            class="bg-gray-500 text-white px-4 py-2 rounded mr-2">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded">
+                            Terminar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </main>
 
     <!-- Scripts -->
@@ -187,6 +229,19 @@
             openModal('deleteEventModal');
         }
 
+        function confirmStartMatching(eventId) {
+            // form = document.getElementById('StartMatchingForm');
+            //form.action = `/events/start-matching/${eventId}`;
+            //openModal('startMatchingModal');
+        }
+
+        function confirmEndMatching(eventId) {
+            const form = document.getElementById('endMatchingForm');
+            form.action = `/events/end-matching/${eventId}`;
+            openModal('endMatchingModal');
+        }
+
+        
     </script>
 </body>
 

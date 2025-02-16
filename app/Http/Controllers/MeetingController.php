@@ -44,7 +44,7 @@ class MeetingController extends Controller{
             'requester_role' => 'required|string',
             'status' => 'required|in:Pendiente,Aceptada,Rechazada',
             'assigned_table' => 'nullable|string|max:50',
-            'time' => 'nullable|date_format:Y-m-d H:i:s',
+            'time' => 'nullable|date_format:H:i',
             'event_id' => 'required|exists:events,id',
             'requester_id' => 'required|exists:users,id',
             'receiver_id' => 'required|exists:users,id',
@@ -70,7 +70,7 @@ class MeetingController extends Controller{
         $validatedData = $request->validate([
             'status' => 'nullable|string|in:Pendiente,Aceptada,Rechazada',
             'assigned_table' => 'nullable|string|max:50',
-            'time' => 'nullable|date_format:Y-m-d H:i:s',
+            'time' => 'nullable|date_format:H:i',
         ]);
         
         $previousStatus = $meeting->status;

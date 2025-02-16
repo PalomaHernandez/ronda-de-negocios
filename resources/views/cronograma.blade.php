@@ -41,13 +41,26 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($meetings as $meeting)
-                <tr>
-                    <td>{{ $meeting->time }}</td>
-                    <td>{{ $meeting->assigned_table ?? 'No asignada' }}</td>
-                    <td>{{ $meeting->requester_name }}</td>
-                    <td>{{ $meeting->receiver_name }}</td>
-                </tr>
+            @php
+                $reunionesPorHora = $meetings->groupBy('time');
+            @endphp
+
+            @foreach($reunionesPorHora as $hora => $reuniones)
+                @php
+                    $totalReuniones = count($reuniones);
+                @endphp
+
+                @foreach($reuniones as $index => $meeting)
+                    <tr>
+
+                        @if ($index === 0)
+                            <td rowspan="{{ $totalReuniones }}">{{ $hora }}</td>
+                        @endif
+                        <td>{{ $meeting->assigned_table ?? 'No asignada' }}</td>
+                        <td>{{ $meeting->requester_name }}</td>
+                        <td>{{ $meeting->receiver_name }}</td>
+                    </tr>
+                @endforeach
             @endforeach
         </tbody>
     </table>
