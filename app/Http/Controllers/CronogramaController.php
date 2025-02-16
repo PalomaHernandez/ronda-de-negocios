@@ -86,6 +86,9 @@ class CronogramaController extends Controller
     // 📝 Generar PDF usando la vista 'cronogramaIndividual' con el nombre
     $pdf = PDF::loadView('cronogramaIndividual', compact('meetings', 'eventId', 'userName'));
 
+    if (request()->expectsJson()) {
+        return $pdf->download('cronograma_individual.pdf');
+    }
     // 📄 Mostrar PDF en el navegador
     return $pdf->stream('cronograma_individual.pdf');
 }

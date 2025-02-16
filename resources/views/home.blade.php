@@ -247,7 +247,7 @@
                     class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
-                <h2 class="text-xl font-bold mb-4">Confirmar Terminación</h2>
+                <h2 class="text-xl font-bold mb-4">Confirmar terminación</h2>
                 <p class="mb-4">¿Estás seguro de que deseas terminar el periodo de matcheo para este evento?</p>
                 <form id="endMatchingForm" method="POST">
                     @csrf
