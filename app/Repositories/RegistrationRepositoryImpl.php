@@ -26,8 +26,10 @@ class RegistrationRepositoryImpl implements RegistrationRepository
         $registration->update($data);
         return $registration->refresh();
     }
-    public function deleteRegistration(int $id): bool{
-        return $this->getById($id)->delete();
+    public function deleteRegistration(int $event_id, int $user_id): bool{
+        return Registration::where('event_id', $event_id)
+                           ->where('participant_id', $user_id)
+                           ->delete();
     }
 
     public function getNotifications(int $event_id, int $user_id): Collection {

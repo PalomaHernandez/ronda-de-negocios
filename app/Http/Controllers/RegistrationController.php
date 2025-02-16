@@ -86,15 +86,15 @@ class RegistrationController extends Controller
         return response()->json($registration);
     }
 
-    public function destroy($id)
+    public function destroy($event_id, $user_id)
     {
-        $isDeleted = $this->repository->deleteRegistration($id);
+        $isDeleted = $this->repository->deleteRegistration($event_id, $user_id);
 
         if (!$isDeleted) {
-            return response()->json(['message' => 'Registration not found'], 404);
+            return response()->json(['message' => 'Inscripción no encontrada'], 404);
         }
 
-        return response()->json(['message' => 'Registration deleted successfully'], 200);
+        return response()->json(['message' => 'Participante eliminado exitosamente.'], 200);
     }
 
     public function getParticipants($eventId)
@@ -103,7 +103,7 @@ class RegistrationController extends Controller
 
 
         if ($registrations->isEmpty()) {
-            return response()->json(['message' => 'No participants found for this event.'], 404);
+            return response()->json(['message' => 'No se encontraron participantes para este evento.'], 200);
         }
 
         $participants = $registrations->map(function ($registration) {
