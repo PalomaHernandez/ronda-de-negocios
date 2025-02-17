@@ -34,6 +34,9 @@ class Event extends Model {
 		'matching_end_date',
 		'logo_path',
         'responsible_id',
+        'tables_needed',
+        'max_participants',
+        'meetings_per_user',
 	];
 
 	protected $casts = [
@@ -53,13 +56,13 @@ class Event extends Model {
 
     protected function startsAt(): Attribute {
         return Attribute::make(
-            get: fn ($value) => Carbon::parse($value)->format('H:i:s')
+            get: fn ($value) => Carbon::parse($value)->format('H:i')
         );
     }
 
     protected function endsAt(): Attribute {
         return Attribute::make(
-            get: fn ($value) => Carbon::parse($value)->format('H:i:s')
+            get: fn ($value) => Carbon::parse($value)->format('H:i')
         );
     }
 

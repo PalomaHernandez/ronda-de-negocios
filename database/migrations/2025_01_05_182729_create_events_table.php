@@ -32,6 +32,9 @@ return new class extends Migration
                 EventStatus::Matching->value,
                 EventStatus::Ended->value,
             ])->default(EventStatus::Registration->value);
+            $table->integer('tables_needed')->unsigned()->nullable();
+            $table->integer('max_participants')->unsigned()->nullable();
+            $table->integer('meetings_per_user')->unsigned()->nullable();
             $table->timestamps();
         });
     }

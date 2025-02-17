@@ -113,16 +113,19 @@ class EventController extends Controller {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255|unique:events,title,'.$id,
             'description' => 'nullable|string',
-            'starts_at' => 'nullable|date_format:H:i:s',
-            'ends_at' => 'nullable|date_format:H:i:s',
+            'starts_at' => 'nullable|date_format:H:i',
+            'ends_at' => 'nullable|date_format:H:i',
             'date' => 'nullable|date',
             'meeting_duration' => 'nullable|integer|min:1',
             'time_between_meetings' => 'nullable|integer|min:0',
-            'inscription_end_date' => 'nullable|date',
-            'matching_end_date' => 'nullable|date',
+            'inscription_end_date' => 'nullable|date_format:Y-m-d H:i',
+            'matching_end_date' => 'nullable|date_format:Y-m-d H:i',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg',
             'documents' => 'nullable|array',
-            'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt'
+            'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt',
+            'tables_needed' => 'nullable|integer',
+            'max_participants' => 'nullable|integer',
+            'meetings_per_user' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -221,7 +224,7 @@ class EventController extends Controller {
         }
     
         $event->status = EventStatus::Ended;
-        //$event->tables = $tables;
+        $event->tables_needed = $tables;
         $event->save();
 
         if(request()->expectsJson()){
