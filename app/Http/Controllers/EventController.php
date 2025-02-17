@@ -211,16 +211,18 @@ class EventController extends Controller {
         $event->status = EventStatus::Ended;
         //$event->tables = $tables;
         $event->save();
+
+        if(request()->expectsJson()){
+            return response()->json([
+                'message' => 'Fase de matching terminada correctamente.',
+                'duration_in_minutes' => $durationInMinutes,
+                'AmmountOfMeetings' => $AmmountOfMeetings,
+                'tables' => $tables,
+                'agenda' => $agenda,
+            ]);
+        }
         
         return redirect()->route('home')->with('success', 'Fase de matching terminada correctamente.');
-        /*
-        return response()->json([
-            'message' => 'Fase de matching terminada correctamente.',
-            'duration_in_minutes' => $durationInMinutes,
-            'AmmountOfMeetings' => $AmmountOfMeetings,
-            'tables' => $tables,
-            'agenda' => $agenda,
-        ]);*/
     }
     
 
