@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Repositories\Interfaces\UserRepository;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -10,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Registration;
 use App\Models\Event;
 use App\Actions\UploadImages;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -36,21 +39,11 @@ class UserController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
         try {
             // Validamos los datos
-            $validatedData = $request->validate([
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:8|confirmed',
-                'name' => 'required|string',
-                'activity' => 'required|string',
-                'location' => 'required|string',
-                'website' => 'required|url',
-                'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-                'gallery' => 'nullable|array',
-                'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            ]);
+            $validatedData = $request->validated();
 
             $user = $this->repository->create($validatedData);
             // Generamos el token
@@ -62,45 +55,37 @@ class UserController extends Controller
                 'message' => 'Registro exitoso'
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (ValidationException $e) {
             \Log::error('Error en el registro: ' . $e->getMessage());
             return response()->json(['error' => 'Error interno en el servidor'], 500);
         }
     }
 
-    public function deleteImages(array $images){
+    public function deleteImages(array $images)
+    {
         $this->repository->deleteImages($images);
     }
 
-    public function update(Request $request)
+    public function update(UpdateUserRequest $request)
     {
         $user = Auth::user();
 
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
-    
-        // Validamos los datos
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'activity' => 'nullable|string|max:255',
-            'location' => 'nullable|string|max:255',
-            'website' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg',
-            'gallery' => 'nullable|array',
-            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+
+        $validatedData = $request->validated();
 
         $deleted_images = request()->input('deleted_images', []);
-        if($deleted_images){
+        if ($deleted_images) {
             $this->deleteImages($deleted_images);
         }
 
-        if(request()->hasFile('logo')){
+        if (request()->hasFile('logo')) {
             UploadImages::execute($user instanceof User ? $user : User::find($user->id), 'logo');
         }
 
-        if(request()->hasFile('gallery')){
+        if (request()->hasFile('gallery')) {
             UploadImages::execute($user, 'gallery');
         }
 
@@ -112,15 +97,10 @@ class UserController extends Controller
         ]);
     }
 
-    public function isRegistered($slug) {
-        $event_id = Event::where('slug', $slug)->first()->id;
+    public function isRegistered($slug)
+    {
+        $isRegistered = $this->repository->isRegistered($slug);
 
-        $user = Auth::user();
-
-         $isRegistered = Registration::where('participant_id', $user->id)
-                                    ->where('event_id', $event_id)
-                                    ->exists();
-    
         return response()->json(['registered' => $isRegistered]);
     }
 

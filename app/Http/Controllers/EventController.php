@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreEventRequest;
+use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use App\Patterns\State\Event\EventStatus;
 use App\Repositories\Interfaces\EventRepository;
@@ -47,93 +49,45 @@ class EventController extends Controller {
         return response()->json($event);
     }
 
-    public function store(Request $request)
+    public function store(StoreEventRequest $request)
     {
         try {
-            $validated = request()->validate([
-                'title' => 'required|string|max:255|unique:events,title',
-                'date' => 'required|date',
-            ], [
-                'title.required' => 'El título del evento es obligatorio',
-                'title.unique' => 'El título del evento ya está en uso',
-                'date.required' => 'La fecha del evento es obligatoria',
+            $validated = $request->validated();
+    
+            $responsible = $this->userRepository->createOrUpdateResponsible([
+                'responsible_email' => $validated['responsible_email'],
+                'responsible_password' => $validated['responsible_password'],
             ]);
-        
-            $userValidated = request()->validate([
-                'responsible_email' => 'required|email',
-                'responsible_password' => 'required|string|min:8|confirmed',
-            ], [
-                'responsible_email.required' => 'El mail del responsable es obligatorio',
-                'responsible_password.required' => 'La contraseña del responsable es obligatoria',
-                'responsible_password.confirmed' => 'La confirmación de la contraseña no coincide',
-                'responsible_password.min' => 'La contraseña debe tener mínimo 8 caracteres',
-            ]);
-            
-        } catch (ValidationException $e) {
-            $errors = $e->errors();
-        
-            $translatedFields = [
-                'title' => 'Título',
-                'date' => 'Fecha',
-                'responsible_email' => 'Correo del Responsable',
-                'responsible_password' => 'Contraseña del Responsable',
-            ];
-        
-            $errorMessage = "Errores encontrados: ";
-            foreach ($errors as $field => $messages) {
-                $fieldName = $translatedFields[$field] ?? $field; 
-                $errorMessage .= ucfirst($fieldName) . ": " . implode(", ", $messages);
-            }
-            Log::error($errorMessage);
-            return redirect()->back()
-                ->withErrors($errors)
-                ->with('error', $errorMessage);
+    
+            $event = $this->repository->create([
+                'title' => $validated['title'],
+                'date' => $validated['date'],
+            ], $responsible);
+    
+            // Enviar correo de confirmación al responsable
+            Mail::to($responsible->email)->send(
+                new EventoCreadoMail(
+                    $event->title,
+                    $event->slug,
+                    $responsible->email,
+                    $validated['responsible_password']
+                )
+            );
+    
+            return redirect()->route('home')->with('success', 'Evento creado exitosamente.');
+    
+        } catch (\Exception $e) {
+            \Log::error('Error al crear el evento: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Hubo un error al crear el evento.');
         }
-        
-
-        $responsible = $this->userRepository->createOrUpdateResponsible($userValidated);
-
-        $event = $this->repository->create($validated, $responsible);
-        
-        
-
-        Mail::to($responsible->email)->send(
-            new EventoCreadoMail(
-                $event->title, 
-                $event->slug, 
-                $responsible->email, 
-                $userValidated['responsible_password']
-            )
-        );
-        return redirect()->route('home')->with('success', 'Evento creado exitosamente.');
     }
 
-    public function update(Request $request, int $id)
+    public function update(UpdateEventRequest $request, int $id)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255|unique:events,title,'.$id,
-            'description' => 'nullable|string',
-            'starts_at' => 'nullable|date_format:H:i',
-            'ends_at' => 'nullable|date_format:H:i',
-            'date' => 'nullable|date',
-            'meeting_duration' => 'nullable|integer|min:1',
-            'time_between_meetings' => 'nullable|integer|min:0',
-            'inscription_end_date' => 'nullable|date_format:Y-m-d H:i',
-            'matching_end_date' => 'nullable|date_format:Y-m-d H:i',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg',
-            'documents' => 'nullable|array',
-            'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx,txt',
-            'tables_needed' => 'nullable|integer',
-            'max_participants' => 'nullable|integer',
-            'meetings_per_user' => 'nullable|integer',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422)
-                ->header('Access-Control-Allow-Origin', '*');
-        }
+        $validator = $request->validated();
 
-        $this->repository->update($id, $validator->validated());
+        $this->repository->update($id, $validator);
 
         return response()->json(['message' => 'Evento actualizado correctamente'])
             ->header('Access-Control-Allow-Origin', '*');

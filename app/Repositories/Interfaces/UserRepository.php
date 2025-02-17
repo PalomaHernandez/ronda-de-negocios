@@ -18,6 +18,8 @@ interface UserRepository {
 
 	public function deleteImages(array $images): void;
 
+	public function isRegistered(string $slug): bool;
+
 	public function update(User $user, array $validatedData ):void;
 
 	public function destroy(int $id):?bool;

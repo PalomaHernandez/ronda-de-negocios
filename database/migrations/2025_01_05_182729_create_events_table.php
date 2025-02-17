@@ -25,8 +25,8 @@ return new class extends Migration
             $table->time('ends_at')->nullable();
             $table->integer('meeting_duration')->unsigned()->nullable();
             $table->integer('time_between_meetings')->unsigned()->nullable();
-            $table->date('inscription_end_date')->nullable();
-            $table->date('matching_end_date')->nullable();
+            $table->dateTime('inscription_end_date')->nullable();
+            $table->dateTime('matching_end_date')->nullable();
             $table->enum('status', [
                 EventStatus::Registration->value,
                 EventStatus::Matching->value,

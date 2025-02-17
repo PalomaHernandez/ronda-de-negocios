@@ -3,12 +3,13 @@ namespace App\Repositories;
 
 use App\Repositories\Interfaces\UserRepository;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Hash;
 use App\Models\Image;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Actions\UploadImages;
+use App\Models\Event;
+use App\Models\Registration;
+
 
 class UserRepositoryImpl implements UserRepository
 {
@@ -89,6 +90,16 @@ class UserRepositoryImpl implements UserRepository
 			'gallery' => 'nullable|array',
 			'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 		]);
+	}
+
+	public function isRegistered(string $slug): bool{
+		$event_id = Event::where('slug', $slug)->first()->id;
+
+        $user = Auth::user();
+
+        return Registration::where('participant_id', $user->id)
+            ->where('event_id', $event_id)
+            ->exists();
 	}
 
 	public function update(User $user, array $validatedData): void
