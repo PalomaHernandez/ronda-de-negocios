@@ -62,14 +62,14 @@ class CronogramaController extends Controller
             $meeting->other_participant_name = $otherUser ? $otherUser->name : 'Desconocido';
 
             switch ($meeting->requester_role) {
-                case 'Compra':
-                    $meeting->participant_role = ($meeting->requester_id == $userId) ? 'Demandante' : 'Ofertante';
+                case 'Demandante':
+                    $meeting->participant_role = ($meeting->requester_id == $userId) ? 'Demandante' : 'Oferente';
                     break;
-                case 'Venta':
-                    $meeting->participant_role = ($meeting->requester_id == $userId) ? 'Ofertante' : 'Demandante';
+                case 'Oferente':
+                    $meeting->participant_role = ($meeting->requester_id == $userId) ? 'Oferente' : 'Demandante';
                     break;
                 case 'Ambos':
-                    $meeting->participant_role = 'Ofertante y Demandante';
+                    $meeting->participant_role = 'Oferente y Demandante';
                     break;
                 default:
                     $meeting->participant_role = 'Desconocido';

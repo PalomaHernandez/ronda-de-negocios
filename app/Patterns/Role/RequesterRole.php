@@ -4,9 +4,9 @@ namespace App\Patterns\Role;
 
 enum RequesterRole:string {
 
-	case Buyer = 'Compra';
+	case Buyer = 'Demandante';
 
-	case Supplier = 'Venta';
+	case Supplier = 'Oferente';
 
 	case Both = 'Ambos'; 
 
