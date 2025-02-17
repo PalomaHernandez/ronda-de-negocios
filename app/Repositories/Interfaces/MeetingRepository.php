@@ -16,4 +16,6 @@ interface MeetingRepository
     public function create(array $data):Meeting|Model;
     public function updateMeeting(int $id, array $data):Meeting|Model;
     public function deleteMeeting(int $id): bool;
+    public function acceptAllMeetings(int $event_id): Collection|array;
+    public function rejectAllMeetings(int $event_id): Collection|array;
 }

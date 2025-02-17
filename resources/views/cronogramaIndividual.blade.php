@@ -29,7 +29,7 @@
 </head>
 <body>
 
-    <h2>Cronograma Individual - Evento {{ $eventId }}</h2>
+    <h2>Cronograma - {{ $event->title }}</h2>
     <h3>Participante: {{ $userName }}</h3>
 
 

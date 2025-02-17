@@ -12,14 +12,17 @@ use App\Patterns\State\Meeting\MeetingStatus;
 use App\Models\Notification;
 
 
-class MeetingController extends Controller{
-    public function __construct(private readonly MeetingRepository $repository){}
-    
+class MeetingController extends Controller
+{
+    public function __construct(private readonly MeetingRepository $repository)
+    {
+    }
+
     public function index()
     {
         $meetings = $this->repository->getAll();
 
-        if(!$meetings){
+        if (!$meetings) {
             return response()->json(['message' => 'There are no meetings.'], 404);
         }
 
@@ -54,8 +57,8 @@ class MeetingController extends Controller{
         $meeting = $this->repository->create($validatedData);
 
         $registration = Registration::where('participant_id', $validatedData['receiver_id'])
-        ->where('event_id', $validatedData['event_id'])
-        ->first();
+            ->where('event_id', $validatedData['event_id'])
+            ->first();
 
         $requester = User::find($validatedData['requester_id']);
 
@@ -72,13 +75,13 @@ class MeetingController extends Controller{
             'assigned_table' => 'nullable|string|max:50',
             'time' => 'nullable|date_format:H:i',
         ]);
-        
+
         $previousStatus = $meeting->status;
 
         if (isset($validatedData['status'])) {
             $validatedData['status'] = MeetingStatus::tryFrom($validatedData['status']) ?? MeetingStatus::Pending;
         }
-        $meeting = $this->repository->updateMeeting($id,$validatedData);
+        $meeting = $this->repository->updateMeeting($id, $validatedData);
 
         if (!$meeting) {
             return response()->json(['message' => 'Meeting not found'], 404);
@@ -95,28 +98,28 @@ class MeetingController extends Controller{
     {
         $requester = User::find($meeting->requester_id);
         $receiver = User::find($meeting->receiver_id);
-    
+
         $requesterRegistration = Registration::where('participant_id', $meeting->requester_id)
             ->where('event_id', $meeting->event_id)
             ->first();
-    
+
         $receiverRegistration = Registration::where('participant_id', $meeting->receiver_id)
             ->where('event_id', $meeting->event_id)
             ->first();
-    
+
         if ($requester && $receiver && $requesterRegistration && $receiverRegistration) {
             // Crear el mensaje
             $statusText = $newStatus === 'Aceptada' ? 'ha sido aceptada' : 'ha sido rechazada';
-            
+
             $messageForRequester = "Tu reunión con {$receiver->name} $statusText.";
             $messageForReceiver = "Tu reunión con {$requester->name} $statusText.";
-    
+
             // Enviar notificaciones a ambas partes
             Notification::createNotification($requesterRegistration->id, $messageForRequester);
             Notification::createNotification($receiverRegistration->id, $messageForReceiver);
         }
     }
-    
+
     public function destroy($id)
     {
         $isDeleted = $this->repository->deleteMeeting($id);
@@ -131,23 +134,52 @@ class MeetingController extends Controller{
     public function getMeetingsByEvent($id)
     {
         $meetings = $this->repository->getMeetingsByEvent($id);
-    
+
         if ($meetings->isEmpty()) {
             return response()->json(['message' => 'No meetings found for this event.'], 404);
         }
-    
+
         return response()->json($meetings);
     }
 
     public function getMeetingsByEventAndUser($event_id, $user_id)
     {
         $meetings = $this->repository->getMeetingsByEventAndUser($event_id, $user_id);
-    
+
         if (!$meetings) {
             return response()->json(['message' => 'No meetings found for this event and user.'], 404);
         }
-    
+
         return response()->json($meetings);
     }
-    
+
+    public function acceptAllMeetings($event_id)
+    {
+        $meetings = $this->repository->acceptAllMeetings($event_id);
+
+        if ($meetings) {
+            foreach ($meetings as $meeting) {
+                $this->notifyParticipants($meeting, 'Aceptada');
+            }
+            return response()->json(['message' => 'Todas las reuniones pendientes han sido aceptadas.'], 200);
+        }
+
+        return response()->json(['message' => 'No hay reuniones pendientes para aceptar.'], 200);
+    }
+
+    public function rejectAllMeetings($event_id)
+    {
+
+        $meetings = $this->repository->rejectAllMeetings($event_id);
+
+        if ($meetings) {
+            foreach ($meetings as $meeting) {
+                $this->notifyParticipants($meeting, 'Rechazada');
+            }
+            return response()->json(['message' => 'Todas las reuniones pendientes han sido rechazadas.'], 200);
+        }
+
+        return response()->json(['message' => 'No hay reuniones pendientes para rechazar.'], 200);
+    }
+
 }
