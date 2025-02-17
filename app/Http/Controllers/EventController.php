@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\Meeting;
 use Carbon\Carbon;
+use App\Mail\EventoCreadoMail;
+use Illuminate\Support\Facades\Mail;
 
 class EventController extends Controller {
 
@@ -91,8 +93,18 @@ class EventController extends Controller {
 
         $responsible = $this->userRepository->createOrUpdateResponsible($userValidated);
 
-        $this->repository->create($validated, $responsible);
+        $event = $this->repository->create($validated, $responsible);
         
+        
+
+        Mail::to($responsible->email)->send(
+            new EventoCreadoMail(
+                $event->title, 
+                $event->slug, 
+                $responsible->email, 
+                $userValidated['responsible_password']
+            )
+        );
         return redirect()->route('home')->with('success', 'Evento creado exitosamente.');
     }
 

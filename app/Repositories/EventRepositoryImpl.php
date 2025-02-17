@@ -28,8 +28,8 @@ class EventRepositoryImpl implements EventRepository
         }
         return $event;
     }
-    public function create(array $data, User $responsible): void{
-        Event::create([
+    public function create(array $data, User $responsible): Event{
+        return Event::create([
             'title' => $data['title'],
             'date' => $data['date'],
             'status' => EventStatus::Registration,
