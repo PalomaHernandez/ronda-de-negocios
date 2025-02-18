@@ -69,7 +69,7 @@ class RegistrationController extends Controller
         return response()->json("Inscripcion exitosa", 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $eventId, $user_id)
     {
         $validatedData = $request->validate([
             'interests' => 'nullable|string',
@@ -77,13 +77,21 @@ class RegistrationController extends Controller
             'remaining_meetings' => 'nullable|integer',
         ]);
 
-        $registration = $this->repository->updateRegistration($id, $validatedData);
+        $registration = Registration::where('participant_id', $user_id)
+                            ->where('event_id', $eventId)
+                            ->first();
 
         if (!$registration) {
             return response()->json(['message' => 'Registration not found'], 404);
         }
 
-        return response()->json($registration);
+        $updatedRegistration = $this->repository->updateRegistration($registration->id, $validatedData);
+
+        if (!$updatedRegistration) {
+            return response()->json(['message' => 'Failed to update registration'], 500);
+        }
+    
+        return response()->json($updatedRegistration);
     }
 
     public function destroy($event_id, $user_id)

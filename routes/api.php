@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'index']);
     Route::patch('/user/profile', [UserController::class, 'update']);
     Route::post('/logout', [LoginController::class, 'logout']);
+    Route::patch('/update-registration/{eventId}/{user_id}', [RegistrationController::class, 'update']);
 });
 
 Route::get('events/{slug}', [EventController::class, 'showByName']);
