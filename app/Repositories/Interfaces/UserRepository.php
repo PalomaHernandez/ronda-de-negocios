@@ -3,6 +3,7 @@
 namespace App\Repositories\Interfaces;
 
 use App\Models\User;
+use App\Models\Registration;
 use Illuminate\Database\Eloquent\Collection;
 
 interface UserRepository {
@@ -18,7 +19,7 @@ interface UserRepository {
 
 	public function deleteImages(array $images): void;
 
-	public function isRegistered(string $slug): bool;
+	public function isRegistered(string $slug): Registration;
 
 	public function update(User $user, array $validatedData ):void;
 

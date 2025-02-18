@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/meetings/{id}', [MeetingController::class, 'update']);
     Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
     Route::get('/user', [UserController::class, 'index']);
-    Route::patch('/user/profile', [UserController::class, 'update']);
+    Route::patch('/user/profile/{registration_id}', [UserController::class, 'update']);
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::patch('/update-registration/{eventId}/{user_id}', [RegistrationController::class, 'update']);
 });

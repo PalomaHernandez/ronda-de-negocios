@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Repositories\Interfaces\EventRepository;
+use App\Repositories\Interfaces\RegistrationRepository;
 use App\Repositories\Interfaces\UserRepository;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,7 +18,7 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    public function __construct(private readonly UserRepository $repository)
+    public function __construct(private readonly UserRepository $repository, private readonly RegistrationRepository $registrationRepository)
     {
     }
 
@@ -66,7 +68,7 @@ class UserController extends Controller
         $this->repository->deleteImages($images);
     }
 
-    public function update(UpdateUserRequest $request)
+    public function update(UpdateUserRequest $request, $registration_id)
     {
         $user = Auth::user();
 
@@ -89,11 +91,13 @@ class UserController extends Controller
             UploadImages::execute($user, 'gallery');
         }
 
-        $user->update($validatedData);
+        $this->repository->update($user, $validatedData);
+        $registration = $this->registrationRepository->updateRegistration($registration_id, $validatedData);
 
         return response()->json([
             'message' => 'Perfil actualizado correctamente',
-            'user' => $user->fresh()->load('images')
+            'user' => $user->fresh()->load('images'),
+            'registration' => $registration,
         ]);
     }
 
@@ -101,7 +105,16 @@ class UserController extends Controller
     {
         $isRegistered = $this->repository->isRegistered($slug);
 
-        return response()->json(['registered' => $isRegistered]);
+        if ($isRegistered) {
+            return response()->json(
+                [
+                    'registered' => 'true',
+                    'registration' => $isRegistered,
+                ]
+            );
+        }
+
+        return response()->json(['registered' => 'false']);
     }
 
     public function destroy($id)

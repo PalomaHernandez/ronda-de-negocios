@@ -48,6 +48,10 @@ class AppServiceProvider extends ServiceProvider
 			->needs(UserRepository::class)
 			->give(UserRepositoryImpl::class);
 
+        $this->app->when(UserController::class)
+			->needs(RegistrationRepository::class)
+			->give(RegistrationRepositoryImpl::class);
+
     }
 
     /**

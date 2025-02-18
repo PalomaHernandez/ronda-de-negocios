@@ -22,20 +22,21 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'activity' => 'nullable|string|max:255',
             'location' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg',
             'gallery' => 'nullable|array',
             'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'interests' => 'nullable|string|max:255',
+            'products_services' => 'nullable|string|max:255',
         ];
     }
 
     public function messages()
     {
         return [
-            'name.required' => 'El nombre es obligatorio.',
             'name.max' => 'El nombre no puede superar los 255 caracteres.',
             'website.url' => 'El sitio web debe ser una URL válida.',
             'logo.image' => 'El logo debe ser una imagen.',
