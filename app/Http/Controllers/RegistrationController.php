@@ -43,6 +43,13 @@ class RegistrationController extends Controller
 
     public function store($event_id)
     {
+        $event = Event::find($event_id);
+        $registeredCount = $event->registrations()->count();
+
+        if ($registeredCount >= $event->max_participants) {
+            return response()->json(['message' => 'El evento ya alcanzó el límite de participantes.'], 403);
+        }
+
         $validatedData = request()->validate([
             'interests' => 'nullable|string',
             'products_services' => 'nullable|string',
