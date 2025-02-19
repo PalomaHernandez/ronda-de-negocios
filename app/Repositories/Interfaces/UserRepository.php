@@ -19,7 +19,7 @@ interface UserRepository {
 
 	public function deleteImages(array $images): void;
 
-	public function isRegistered(string $slug): Registration;
+	public function isRegistered(string $slug): Registration|null;
 
 	public function update(User $user, array $validatedData ):void;
 

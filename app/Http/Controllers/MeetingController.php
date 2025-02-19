@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Patterns\State\Meeting\MeetingStatus;
 use App\Models\Notification;
+use App\Models\Event;
+use App\Mail\MeetingMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 
 class MeetingController extends Controller
@@ -56,12 +60,20 @@ class MeetingController extends Controller
         $validatedData['status'] = MeetingStatus::tryFrom($validatedData['status']) ?? MeetingStatus::Pending;
         $meeting = $this->repository->create($validatedData);
 
-        $registration = Registration::where('participant_id', $validatedData['receiver_id'])
-            ->where('event_id', $validatedData['event_id'])
-            ->first();
-
         $requester = User::find($validatedData['requester_id']);
+        $receiver = User::find($validatedData['receiver_id']);
 
+        $receiverRegistration = Registration::where('participant_id', $receiver->id)
+            ->where('event_id', $meeting->event_id)
+            ->first();
+        
+        $event = Event::find($meeting->event_id);
+
+        if ($receiver && $requester) {
+            $message = "Tienes una nueva solicitud de reunión de parte de " . $requester->name;
+            Notification::createNotification($receiverRegistration->id, $message);
+            Mail::to($receiver->email)->send(new MeetingMail($message, 'Pendiente', $event->slug));
+        }
 
         return response()->json($meeting, 201);
     }
@@ -106,17 +118,26 @@ class MeetingController extends Controller
         $receiverRegistration = Registration::where('participant_id', $meeting->receiver_id)
             ->where('event_id', $meeting->event_id)
             ->first();
+        
+        $event = Event::find($meeting->event_id);
 
         if ($requester && $receiver && $requesterRegistration && $receiverRegistration) {
-            // Crear el mensaje
             $statusText = $newStatus === 'Aceptada' ? 'ha sido aceptada' : 'ha sido rechazada';
 
             $messageForRequester = "Tu reunión con {$receiver->name} $statusText.";
             $messageForReceiver = "Tu reunión con {$requester->name} $statusText.";
 
-            // Enviar notificaciones a ambas partes
             Notification::createNotification($requesterRegistration->id, $messageForRequester);
             Notification::createNotification($receiverRegistration->id, $messageForReceiver);
+
+            if ($newStatus === 'Aceptada') {
+                Log::info('Enviando correo a ' . $requester->email);
+                Mail::to($requester->email)->send(new MeetingMail($messageForRequester, $newStatus, $event->slug));
+                //Mail::to($receiver->email)->send(new MeetingMail($messageForReceiver, $newStatus));
+            } elseif ($newStatus === 'Rechazada') {
+                Mail::to($requester->email)->send(new MeetingMail($messageForRequester, $newStatus, $event->slug));
+                //Mail::to($receiver->email)->send(new MeetingMail($messageForReceiver, $newStatus));
+            }
         }
     }
 
@@ -136,7 +157,7 @@ class MeetingController extends Controller
         $meetings = $this->repository->getMeetingsByEvent($id);
 
         if ($meetings->isEmpty()) {
-            return response()->json(['message' => 'No meetings found for this event.'], 404);
+            return response()->json(['message' => 'No se encontraron reuniones para este evento.'], 404);
         }
 
         return response()->json($meetings);

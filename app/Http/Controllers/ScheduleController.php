@@ -7,9 +7,9 @@ use App\Models\User;
 use App\Models\Event;
 use PDF;
 
-class CronogramaController extends Controller
+class ScheduleController extends Controller
 {
-    public function generarPDFtotal($eventId)
+    public function generalPDF($eventId)
     {
         $meetings = Meeting::where('event_id', $eventId)
             ->orderBy('time')
@@ -35,7 +35,7 @@ class CronogramaController extends Controller
         return $pdf->stream('cronograma.pdf');
         //return $pdf->download('cronograma.pdf');
     }
-    public function generarPDFparticipante($eventId, $userId)
+    public function participantPDF($eventId, $userId)
     {
         $user = User::find($userId);
         if (!$user) {

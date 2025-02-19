@@ -9,21 +9,23 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EventoCreadoMail extends Mailable
+class MeetingMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $eventName;
-    public $eventUrl;
-    public $responsibleEmail;
-    public $responsiblePassword;
+    public $msg;
+    public $meetingStatus;
 
-    public function __construct($eventName, $eventUrl, $responsibleEmail, $responsiblePassword)
+    public $eventName;
+
+    /**
+     * Create a new message instance.
+     */
+    public function __construct($msg, $meetingStatus, $eventName)
     {
+        $this->msg = $msg;
+        $this->meetingStatus = $meetingStatus;
         $this->eventName = $eventName;
-        $this->eventUrl = $eventUrl;
-        $this->responsibleEmail = $responsibleEmail;
-        $this->responsiblePassword = $responsiblePassword;
     }
 
     /**
@@ -32,7 +34,7 @@ class EventoCreadoMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Creacion de evento en Rondas uns',
+            subject: 'Notificación sobre tu reunión',
         );
     }
 
@@ -42,7 +44,12 @@ class EventoCreadoMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'event-created',
+            view: 'emails.meeting_notification',
+            with: [
+                'msg' => $this->msg,
+                'status' => $this->meetingStatus,
+                'eventName' => $this->eventName,
+            ]
         );
     }
 

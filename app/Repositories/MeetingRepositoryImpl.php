@@ -3,11 +3,16 @@
 namespace App\Repositories;
 
 use App\Models\Meeting;
+use App\Models\User;
+use App\Models\Event;
 use App\Models\Registration;
 use App\Patterns\State\Meeting\MeetingStatus;
+use App\Models\Notification;
 use App\Repositories\Interfaces\MeetingRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use App\Mail\MeetingMail;
+use Illuminate\Support\Facades\Mail;
 
 class MeetingRepositoryImpl implements MeetingRepository
 {
@@ -39,10 +44,6 @@ class MeetingRepositoryImpl implements MeetingRepository
     }
     public function create(array $data): Meeting
     {
-        $registration = Registration::findOrFail($data['requester_id']);
-        if ($registration) {
-            $registration->remaining_meetings--;
-        }
         return Meeting::create($data);
     }
     public function updateMeeting(int $id, array $data): Meeting|Model
@@ -57,7 +58,22 @@ class MeetingRepositoryImpl implements MeetingRepository
         $meeting = $this->getById($id);
 
         if (!$meeting) {
-            return false; // Retorna false si la reunión no existe
+            return false;
+        }
+
+        $requester = User::find($meeting->requester_id);
+        $receiver = User::find($meeting->receiver_id);
+
+        $receiverRegistration = Registration::where('participant_id', $receiver->id)
+            ->where('event_id', $meeting->event_id)
+            ->first();
+        
+        $event = Event::find($meeting->event_id);
+
+        if ($receiverRegistration) {
+            $message = "La reunión con {$requester->name} ha sido cancelada";
+            Notification::createNotification($receiverRegistration->id, $message);
+            Mail::to($receiver->email)->send(new MeetingMail($message, 'Cancelada', $event->slug));
         }
 
         return $meeting->delete();

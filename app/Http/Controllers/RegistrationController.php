@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Event;
 
 class RegistrationController extends Controller
 {
@@ -107,30 +108,29 @@ class RegistrationController extends Controller
 
     public function getParticipants($eventId)
     {
-        $registrations = $this->repository->getRegistrationsByEvent($eventId);
+        $event = Event::with('participants.images')->find($eventId);
 
+        if (!$event) {
+            return response()->json(['message' => 'Evento no encontrado.'], 404);
+        }
 
-        if ($registrations->isEmpty()) {
+        if ($event->participants->isEmpty()) {
             return response()->json(['message' => 'No se encontraron participantes para este evento.'], 200);
         }
 
-        $participants = $registrations->map(function ($registration) {
+        $participants = $event->participants->map(function ($participant) {
             return [
-                'id' => $registration->participant->id,
-                'name' => $registration->participant->name,
-                'email' => $registration->participant->email,
-                'activity' => $registration->participant->activity,
-                'location' => $registration->participant->location,
-                'website' => $registration->participant->website,
-                'logo_path' => $registration->participant->logo_path
-                    ?  $registration->participant->logo_path
-                    : null,
-                'profile_images' => $registration->participant->images->isNotEmpty()
-                    ? $registration->participant->images
-                    : null,
-                'interests' => $registration->interests,
-                'product_services' => $registration->products_services,
-                'remaining_meetings' => $registration->remaining_meetings,
+                'id' => $participant->id,
+                'name' => $participant->name,
+                'email' => $participant->email,
+                'activity' => $participant->activity,
+                'location' => $participant->location,
+                'website' => $participant->website,
+                'logo_path' => $participant->logo_path ?: null,
+                'profile_images' => $participant->images->isNotEmpty() ? $participant->images : null,
+                'interests' => $participant->pivot->interests ?? null,
+                'product_services' => $participant->pivot->products_services ?? null,
+                'remaining_meetings' => $participant->pivot->remaining_meetings ?? 0,
             ];
         });
 
@@ -138,10 +138,8 @@ class RegistrationController extends Controller
     }
 
     public function getNotifications($event_id, $user_id) {
-        // Usar el método del repositorio
         $notifications = $this->repository->getNotifications($event_id, $user_id);
 
-        // Si no se encuentran notificaciones, devolver un mensaje
         if (!$notifications) {
             return response()->json(['message' => 'No notifications found for this user.'], 404);
         }

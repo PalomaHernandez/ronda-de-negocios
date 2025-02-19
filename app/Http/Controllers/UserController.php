@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Repositories\Interfaces\EventRepository;
 use App\Repositories\Interfaces\RegistrationRepository;
 use App\Repositories\Interfaces\UserRepository;
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Registration;
-use App\Models\Event;
 use App\Actions\UploadImages;
 use Illuminate\Validation\ValidationException;
 
@@ -114,7 +110,7 @@ class UserController extends Controller
             );
         }
 
-        return response()->json(['registered' => 'false']);
+        return response()->json(['registered' => false]);
     }
 
     public function destroy($id)

@@ -5,18 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
+use App\Mail\CreatedEventMail;
 use App\Models\Event;
 use App\Patterns\State\Event\EventStatus;
 use App\Repositories\Interfaces\EventRepository;
 use App\Repositories\Interfaces\UserRepository;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Models\Meeting;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Mail\EventoCreadoMail;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Notification;
+use App\Mail\GeneralScheduleMail;
+use App\Mail\IndividualScheduleMail;
 
 class EventController extends Controller {
 
@@ -38,7 +40,7 @@ class EventController extends Controller {
         return view('modals.delete-event');
     }
 
-    public function showByName($slug)
+    public function getEvent($slug)
     {
         $event = $this->repository->getByName($slug);
 
@@ -64,9 +66,8 @@ class EventController extends Controller {
                 'date' => $validated['date'],
             ], $responsible);
     
-            // Enviar correo de confirmación al responsable
             Mail::to($responsible->email)->send(
-                new EventoCreadoMail(
+                new CreatedEventMail(
                     $event->title,
                     $event->slug,
                     $responsible->email,
@@ -123,6 +124,13 @@ class EventController extends Controller {
         $event->status = EventStatus::Matching;
         $event->save();
 
+        $participants = $event->participants;
+        foreach ($participants as $participant) {
+            $message = "Ha comenzado la fase de coordinación de reuniones del evento";
+            Notification::createNotification($participant->id, $message);
+            //Mail::to($participant->email)->send(new MeetingMail($message, 'Pendiente', $event->slug));
+        }
+
         return redirect()->route('home')->with('success', 'Fase de matching iniciada correctamente.');
     }
 
@@ -157,12 +165,12 @@ class EventController extends Controller {
         }
     
         $meetings = Meeting::where('event_id', $eventId)->get();
-        $reuniones = $meetings->map(function ($meeting) {
+        $meetingsToArray = $meetings->map(function ($meeting) {
             return [$meeting->requester_id, $meeting->receiver_id];
         })->toArray();
     
         $agenda = $this->asignarReuniones(
-            $reuniones, 
+            $meetingsToArray, 
             $event->starts_at, 
             $event->ends_at, 
             $meeting_duration, 
@@ -191,20 +199,45 @@ class EventController extends Controller {
         $event->tables_needed = $tables;
         $event->save();
 
+        $this->sendResponsibleSchedule($event);
+        $this->sendParticipantsSchedule($event);
+
         if(request()->expectsJson()){
             return response()->json([
                 'message' => 'Fase de matching terminada correctamente.',
-                'duration_in_minutes' => $durationInMinutes,
-                'AmmountOfMeetings' => $AmmountOfMeetings,
-                'tables' => $tables,
-                'agenda' => $agenda,
             ]);
         }
         
         return redirect()->route('home')->with('success', 'Fase de matching terminada correctamente.');
     }
-    
 
+    private function sendResponsibleSchedule(Event $event){
+            $responsible = User::find($event->responsible_id);
+        
+        if ($responsible) {
+            $scheduleController = app(ScheduleController::class);
+            $schedule = $scheduleController->generalPDF($event->id); 
+            Mail::to($responsible->email)->send(new GeneralScheduleMail($schedule, $event->slug));
+        }
+    }
+
+    private function sendParticipantsSchedule(Event $event){
+        foreach ($event->participants() as $participant) {
+            $participantMeetings = Meeting::where('event_id', $event->id)
+                ->where(function ($query) use ($participant) {
+                    $query->where('requester_id', $participant->id)
+                          ->orWhere('receiver_id', $participant->id);
+                })->get();
+    
+            if ($participantMeetings->isNotEmpty()) {
+                $scheduleController = app(ScheduleController::class);
+                $pdf = $scheduleController->participantPDF($event->id, $participant->id);
+    
+                Mail::to($participant->email)->send(new IndividualScheduleMail($pdf, $participant->name, $event->slug));
+            }
+        }
+    }
+    
     private function asignarReuniones($reuniones, $horaInicio, $horaFin, $duracionReunion, $descanso) {
 
         usort($reuniones, function($a, $b) {

@@ -7,7 +7,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\auth\LoginController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\MeetingController;
-use App\Http\Controllers\CronogramaController;
+use App\Http\Controllers\ScheduleController;
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -23,8 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{slug}/is-registered', [UserController::class, 'isRegistered']);
         Route::delete('/{id}/participants/{user_id}', [RegistrationController::class, 'destroy']);
     });
-    Route::get('/cronograma/{eventId}', [CronogramaController::class, 'generarPDFtotal']);
-    Route::get('/cronograma/{eventId}/{userId}',[CronogramaController::class, 'generarPDFparticipante']);
+    Route::get('/cronograma/{eventId}', [ScheduleController::class, 'generalPDF']);
+    Route::get('/cronograma/{eventId}/{userId}',[ScheduleController::class, 'participantPDF']);
     Route::post('/meetings', [MeetingController::class, 'store']);
     Route::post('/meetings/{event_id}/accept-all', [MeetingController::class, 'acceptAllMeetings']);
     Route::post('/meetings/{event_id}/reject-all', [MeetingController::class, 'rejectAllMeetings']);
@@ -36,7 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/update-registration/{eventId}/{user_id}', [RegistrationController::class, 'update']);
 });
 
-Route::get('events/{slug}', [EventController::class, 'showByName']);
+Route::get('events/{slug}', [EventController::class, 'getEvent']);
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [UserController::class, 'store']);
 
