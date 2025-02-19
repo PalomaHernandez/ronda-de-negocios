@@ -97,12 +97,17 @@
                                             </template>
                                         </li>
                                         <li>
-                                            <template x-if="'{{ $event->status }}' === 'Inscripcion'">
-                                                <button onclick="startMatching({{ $event->id }})"
-                                                    class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center">
-                                                    <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo  
-                                                </button>
-                                            </template>
+                                        <template x-if="'{{ $event->status }}' === 'Inscripcion'">
+                                        <button onclick="startMatching(
+    {{ $event->id }},
+    '{{ $event->starts_at ?? 'null' }}',
+    '{{ $event->ends_at ?? 'null' }}',
+    '{{ $event->meeting_duration ?? 'null' }}',
+    '{{ $event->time_between_meetings ?? 'null' }}'
+)">
+    <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo
+</button>
+                                        </template>
                                         </li>
                                         <li>
                                             <template x-if="'{{ $event->status }}' === 'Matcheo'">
@@ -222,7 +227,6 @@
             </div>
         </div>
 
-        <!-- Modal Confirmar Iniciar Periodo de Matcheo -->
         <div id="startMatchingModal"
             class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
             <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
@@ -230,12 +234,27 @@
                     class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
-                <h2 class="text-xl font-bold mb-4">Confirmar inicio</h2>
-                <p class="mb-4">¿Estás seguro de que deseas iniciar el periodo de matcheo para este evento?</p>
+
+                <h2 class="text-xl font-bold mb-4">Detalles del periodo de reuniones</h2>
+
+                <!-- Formulario -->
                 <form id="startMatchingForm" method="POST">
                     @csrf
-                    @method('PATCH')
+                    @method('PATCH') <!-- Esto se usa para que Laravel lo reconozca como PATCH -->
                     <input type="hidden" id="startMatchingEventId" name="event_id">
+
+                    <label>Hora de inicio:</label>
+                    <input type="time" id="startsAt" name="starts_at" class="border p-2 rounded mb-2 w-full">
+
+                    <label>Hora de finalización:</label>
+                    <input type="time" id="endsAt" name="ends_at" class="border p-2 rounded mb-2 w-full">
+
+                    <label>Duración de reuniones (minutos):</label>
+                    <input type="number" id="meetingDuration" name="meeting_duration" class="border p-2 rounded mb-2 w-full">
+
+                    <label>Tiempo de descanso entre reuniones (minutos):</label>
+                    <input type="number" id="timeBetweenMeetings" name="time_between_meetings" class="border p-2 rounded mb-2 w-full">
+
                     <div class="flex justify-end">
                         <button type="button" onclick="closeModal('startMatchingModal')"
                             class="bg-gray-500 text-white px-4 py-2 rounded mr-2">
@@ -294,11 +313,18 @@
             openModal('deleteEventModal');
         }
 
-        function startMatching(eventId) {
-            form = document.getElementById('startMatchingForm');
-            form.action = `/events/start-matching/${eventId}`;
-            openModal('startMatchingModal');
-        }
+        function startMatching(eventId, startsAt, endsAt, meetingDuration, timeBetweenMeetings) {
+        // Asignar la acción del formulario
+        document.getElementById('startMatchingForm').action = `/events/start-matching/${eventId}`;
+
+        // Llenar los valores existentes en los inputs (si los hay)
+        document.getElementById('startsAt').value = startsAt !== 'null' && startsAt ? startsAt : '';
+        document.getElementById('endsAt').value = endsAt !== 'null' && endsAt ? endsAt : '';
+        document.getElementById('meetingDuration').value = meetingDuration !== 'null' && meetingDuration ? meetingDuration : '';
+        document.getElementById('timeBetweenMeetings').value = timeBetweenMeetings !== 'null' && timeBetweenMeetings ? timeBetweenMeetings : '';
+
+        openModal('startMatchingModal');
+    }
 
         function confirmEndMatching(eventId) {
             const form = document.getElementById('endMatchingForm');

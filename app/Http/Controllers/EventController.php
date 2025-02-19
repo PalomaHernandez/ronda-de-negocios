@@ -103,12 +103,22 @@ class EventController extends Controller {
         return redirect()->route('home')->with('success', 'Evento eliminado exitosamente.');
     }
 
-    public function startMatchingPhase(int $event_id){
+    public function startMatchingPhase(Request $request, int $event_id){
         $event = Event::find($event_id);
 
         if (!$event) {
             return response()->json(['message' => 'Evento no encontrado'], 404);
         }
+
+        $validated = $request->validate([
+            'starts_at' => 'nullable|date_format:H:i',
+            'ends_at' => 'nullable|date_format:H:i|after_or_equal:starts_at',
+            'meeting_duration' => 'nullable|integer|min:1',
+            'time_between_meetings' => 'nullable|integer|min:0',
+        ]);
+    
+        // Actualizar solo si se envían valores
+        $event->fill(array_filter($validated));
 
         $event->status = EventStatus::Matching;
         $event->save();
