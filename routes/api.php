@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{event_id}/notifications/{user_id}', [RegistrationController::class, 'getNotifications']);
         Route::get('/{slug}/is-registered', [UserController::class, 'isRegistered']);
         Route::delete('/{id}/participants/{user_id}', [RegistrationController::class, 'destroy']);
+        Route::get('/{id}/statistics', [EventController::class, 'getEventStatistics']);
     });
     Route::get('/cronograma/{eventId}', [ScheduleController::class, 'generalPDF']);
     Route::get('/cronograma/{eventId}/{userId}',[ScheduleController::class, 'participantPDF']);

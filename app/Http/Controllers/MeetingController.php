@@ -72,7 +72,7 @@ class MeetingController extends Controller
         if ($receiver && $requester) {
             $message = "Tienes una nueva solicitud de reunión de parte de " . $requester->name;
             Notification::createNotification($receiverRegistration->id, $message);
-            Mail::to($receiver->email)->send(new MeetingMail($message, 'Pendiente', $event->slug));
+            //Mail::to($receiver->email)->send(new MeetingMail($message, 'Pendiente', $event->slug));
         }
 
         return response()->json($meeting, 201);
@@ -131,11 +131,10 @@ class MeetingController extends Controller
             Notification::createNotification($receiverRegistration->id, $messageForReceiver);
 
             if ($newStatus === 'Aceptada') {
-                Log::info('Enviando correo a ' . $requester->email);
-                Mail::to($requester->email)->send(new MeetingMail($messageForRequester, $newStatus, $event->slug));
+                //Mail::to($requester->email)->send(new MeetingMail($messageForRequester, $newStatus, $event->slug));
                 //Mail::to($receiver->email)->send(new MeetingMail($messageForReceiver, $newStatus));
             } elseif ($newStatus === 'Rechazada') {
-                Mail::to($requester->email)->send(new MeetingMail($messageForRequester, $newStatus, $event->slug));
+                //Mail::to($requester->email)->send(new MeetingMail($messageForRequester, $newStatus, $event->slug));
                 //Mail::to($receiver->email)->send(new MeetingMail($messageForReceiver, $newStatus));
             }
         }

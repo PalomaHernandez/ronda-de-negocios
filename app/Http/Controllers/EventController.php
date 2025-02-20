@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateEventRequest;
 use App\Mail\CreatedEventMail;
 use App\Models\Event;
 use App\Patterns\State\Event\EventStatus;
+use App\Patterns\State\Meeting\MeetingStatus;
 use App\Repositories\Interfaces\EventRepository;
 use App\Repositories\Interfaces\UserRepository;
 use Illuminate\Support\Facades\Log;
@@ -124,10 +125,10 @@ class EventController extends Controller {
         $event->status = EventStatus::Matching;
         $event->save();
 
-        $participants = $event->participants;
-        foreach ($participants as $participant) {
+        $registrations = $event->registrations();
+        foreach ($registrations as $registration) {
             $message = "Ha comenzado la fase de coordinación de reuniones del evento";
-            Notification::createNotification($participant->id, $message);
+            Notification::createNotification($registration->id, $message);
             //Mail::to($participant->email)->send(new MeetingMail($message, 'Pendiente', $event->slug));
         }
 
@@ -199,8 +200,8 @@ class EventController extends Controller {
         $event->tables_needed = $tables;
         $event->save();
 
-        $this->sendResponsibleSchedule($event);
-        $this->sendParticipantsSchedule($event);
+        //$this->sendResponsibleSchedule($event);
+        //$this->sendParticipantsSchedule($event);
 
         if(request()->expectsJson()){
             return response()->json([
@@ -217,7 +218,7 @@ class EventController extends Controller {
         if ($responsible) {
             $scheduleController = app(ScheduleController::class);
             $schedule = $scheduleController->generalPDF($event->id); 
-            Mail::to($responsible->email)->send(new GeneralScheduleMail($schedule, $event->slug));
+            //Mail::to($responsible->email)->send(new GeneralScheduleMail($schedule, $event->slug));
         }
     }
 
@@ -233,7 +234,7 @@ class EventController extends Controller {
                 $scheduleController = app(ScheduleController::class);
                 $pdf = $scheduleController->participantPDF($event->id, $participant->id);
     
-                Mail::to($participant->email)->send(new IndividualScheduleMail($pdf, $participant->name, $event->slug));
+                //Mail::to($participant->email)->send(new IndividualScheduleMail($pdf, $participant->name, $event->slug));
             }
         }
     }
@@ -283,6 +284,35 @@ class EventController extends Controller {
         }
         
         return $agenda;
+    }
+
+    public function getEventStatistics($id){
+        $event = Event::find($id);
+
+        if($event->status !== EventStatus::Ended){
+            return response()->json("Las estadísticas estarán disponibles cuando se finalice el período de coordinación de reuniones.", 423);
+        }
+
+        $inscriptions = $event->registrations()->count();
+
+        $meetings = $event->meetings()->where('status', MeetingStatus::Accepted)->count();
+
+        $inscriptionsPerDay = $event->registrations()->selectRaw('DATE(created_at) as date, COUNT(*) as count')->groupBy('date')
+        ->orderBy('date')
+        ->get();
+
+        $orderedInscriptionsPerDay = $inscriptionsPerDay->map(function ($item) {
+            return [
+                'date' => Carbon::parse($item->date)->format('d-m-Y'),
+                'count' => $item->count,
+            ];
+        });
+
+        return response()->json([
+            'totalInscriptions' => $inscriptions,
+            'totalMeetings' => $meetings,
+            'inscriptionsPerDay' => $orderedInscriptionsPerDay,
+        ]);
     }
     
 }

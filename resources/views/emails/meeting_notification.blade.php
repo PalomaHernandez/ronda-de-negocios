@@ -1,4 +1,3 @@
-<!-- resources/views/emails/event-created.blade.php -->
 <!DOCTYPE html>
 <html>
 <head>

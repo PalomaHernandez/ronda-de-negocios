@@ -69,15 +69,10 @@ class Event extends Model
 
     public function participants()
     {
-        return $this->hasManyThrough(
-            User::class,
-            Registration::class,
-            'event_id',
-            'id',
-            'id',
-            'participant_id'
-        );
+        return $this->belongsToMany(User::class, 'registrations', 'event_id', 'participant_id')
+                ->withPivot(['interests', 'products_services', 'remaining_meetings']);
     }
+
 
     public function files()
     {
