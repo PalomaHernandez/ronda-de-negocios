@@ -10,6 +10,7 @@ class File extends Model
     use HasFactory;
     protected $fillable = [
         'path',
+        'url',
         'original_name',
     ];
 

@@ -133,10 +133,10 @@ class RegistrationController extends Controller
                 'activity' => $participant->activity,
                 'location' => $participant->location,
                 'website' => $participant->website,
-                'logo_path' => $participant->logo_path ?: null,
+                'logo_url' => $participant->logo_url ?: null,
                 'profile_images' => $participant->images->isNotEmpty() ? $participant->images : null,
                 'interests' => $participant->pivot->interests ?? null,
-                'product_services' => $participant->pivot->products_services ?? null,
+                'products_services' => $participant->pivot->products_services ?? null,
                 'remaining_meetings' => $participant->pivot->remaining_meetings ?? 0,
             ];
         });

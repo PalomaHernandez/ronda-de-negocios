@@ -20,9 +20,9 @@ class UploadFiles {
             $path = Storage::disk('public')->putFileAs('files', $file, $fileName);
 
             if ($type === 'logo') {
-                $event->update(['logo_path' => url('storage/' . $path)]);
+                $event->update(['logo_path' => $path, 'logo_url' => url('storage/' . $path)]);
             } else {
-                $event->files()->create(['path' => url('storage/' . $path), 'original_name' => $fileOriginalName]);
+                $event->files()->create(['path' => $path,'url' => url('storage/' . $path), 'original_name' => $fileOriginalName]);
             }
         }
     

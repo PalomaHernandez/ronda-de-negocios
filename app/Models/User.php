@@ -21,6 +21,7 @@ class User extends Authenticatable {
 		'location',
 		'website',
 		'logo_path',
+		'logo_url',
 	];
 
 	protected $hidden = [

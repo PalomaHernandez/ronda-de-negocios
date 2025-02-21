@@ -57,7 +57,16 @@ class EventRepositoryImpl implements EventRepository
                 Storage::delete($currentLogo);
             }
 			UploadFiles::execute($event, 'logo');
-		}
+		} else if(request()->input('deleteLogo') === 'true'){
+            Log::info("Logo eliminar");
+            Log::info($currentLogo);
+            if ($currentLogo) {
+                Storage::delete($currentLogo);
+                $event->logo_path = null;
+                $event->logo_url = null;
+                $event->save();
+            }
+        }
 
         if (request()->hasFile('documents')) {
 			UploadFiles::execute($event, 'documents');

@@ -12,7 +12,8 @@ class ImageFactory extends Factory {
 
 	public function definition():array{
 		return [
-			'path' => 'http://127.0.0.1:8000/storage/images/c75e37c7-bd36-4d9a-819d-d3e6f5edc6ad.png',
+			'path' => 'images/c75e37c7-bd36-4d9a-819d-d3e6f5edc6ad.png',
+			'url' => 'http://127.0.0.1:8000/storage/images/c75e37c7-bd36-4d9a-819d-d3e6f5edc6ad.png',
 			'user_id' => User::inRandomOrder()->first('id')->id,
 		];
 	}

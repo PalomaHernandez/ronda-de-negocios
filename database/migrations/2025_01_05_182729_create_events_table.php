@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('location')->nullable();
             $table->string('logo_path')->nullable();
+            $table->string('logo_url')->nullable();
             $table->date('date');
             $table->time('starts_at')->nullable();
             $table->time('ends_at')->nullable();

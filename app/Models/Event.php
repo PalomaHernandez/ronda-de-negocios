@@ -35,6 +35,7 @@ class Event extends Model
         'inscription_end_date',
         'matching_end_date',
         'logo_path',
+        'logo_url',
         'responsible_id',
         'tables_needed',
         'max_participants',
