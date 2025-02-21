@@ -24,6 +24,7 @@ class StoreEventRequest extends FormRequest
         return [
             'title' => 'required|string|max:255|unique:events,title',
             'date' => 'required|date',
+            'max_participants' => 'required|integer|min:1',
             'responsible_email' => 'required|email',
             'responsible_password' => 'required|string|min:8|confirmed',
         ];

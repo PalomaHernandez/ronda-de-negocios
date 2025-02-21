@@ -98,15 +98,16 @@
                                         </li>
                                         <li>
                                         <template x-if="'{{ $event->status }}' === 'Inscripcion'">
-                                        <button onclick="startMatching(
-    {{ $event->id }},
-    '{{ $event->starts_at ?? 'null' }}',
-    '{{ $event->ends_at ?? 'null' }}',
-    '{{ $event->meeting_duration ?? 'null' }}',
-    '{{ $event->time_between_meetings ?? 'null' }}'
-)">
-    <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo
-</button>
+                                            <button onclick="startMatching(
+                                                {{ $event->id }},
+                                                '{{ $event->starts_at ?? 'null' }}',
+                                                '{{ $event->ends_at ?? 'null' }}',
+                                                '{{ $event->meeting_duration ?? 'null' }}',
+                                                '{{ $event->time_between_meetings ?? 'null' }}')
+                                                '{{ $event->meetings_per_user ?? 'null' }}'"
+                                                class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center">
+                                                <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo
+                                            </button>
                                         </template>
                                         </li>
                                         <li>
@@ -144,60 +145,74 @@
         <!-- Modales -->
         <div id="modals">
             <!-- Modal Crear Evento -->
-            <div id="createEventModal"
+           <div id="createEventModal"
                 class="absolute top-16 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
-                <div class="bg-white p-6 rounded shadow-lg w-1/3 relative mt-10 mb-10">
-                    <button onclick="closeModal('createEventModal')"
-                        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                <div class="bg-white p-6 rounded shadow-lg w-2/3 relative mt-10 mb-10">
+                    <!-- Botón de cierre -->
+                    <button onclick="closeModal('createEventModal')" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
                         <i class="fa-solid fa-xmark text-xl"></i>
                     </button>
 
                     <h2 class="text-xl font-bold mb-4">Crear Evento</h2>
+                    
                     <form action="{{ route('events.create') }}" method="POST">
                         @csrf
-                        <div class="labeled-input">
-                            <label for="title" class="label">Título</label>
-                            <input type="text" id="title" name="title" required />
+                        
+                        <!-- Sección Título y Fecha (Dos columnas) -->
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="labeled-input">
+                                <label for="title" class="label">Título</label>
+                                <input type="text" id="title" name="title" required class="w-full p-2 border rounded"/>
+                            </div>
+
+                            <div class="labeled-input">
+                                <label for="date" class="label">Fecha</label>
+                                <input type="date" id="date" name="date" required class="w-full p-2 border rounded"/>
+                            </div>
+                            <div class="labeled-input">
+                                <label for="maxParticipants" class="label">Máx. Participantes</label>
+                                <input type="number" id="maxParticipants" name="max_participants" min="1" required class="w-full p-2 border rounded"/>
+                            </div>
+
                         </div>
 
-                        <div class="labeled-input">
-                            <label for="date" class="label">Fecha</label>
-                            <input type="date" id="date" name="date" required />
-                        </div>
                         <!-- Asignar Responsable -->
-                        <hr class="my-4">
+                        <hr class="">
                         <div class="p-3 border rounded">
                             <h3 class="font-semibold text-gray-700 mb-2">Asignar Responsable</h3>
-                            <!-- Email del Responsable -->
+
+                            <!-- Sección de Responsable en dos columnas -->
+                            <div class="grid grid-cols-3 gap-4">
                             <div class="labeled-input">
-                                <label for="responsibleEmail" class="label">Email</label>
-                                <input type="email" id="responsibleEmail" name="responsible_email" required />
-                            </div>
-                            <!-- Contraseña del Responsable -->
-                            <div class="labeled-input">
-                                <label for="responsiblePassword" class="label">Contraseña</label>
-                                <input type="password" id="responsiblePassword" name="responsible_password" required />
-                            </div>
-                            <!-- Confirmar Contraseña -->
-                            <div class="labeled-input">
-                                <label for="confirmPassword" class="label">Confirmar
-                                    Contraseña</label>
-                                <input type="password" id="confirmPassword" name="responsible_password_confirmation"
-                                    required />
+                                    <label for="responsibleEmail" class="label">Email</label>
+                                    <input type="email" id="responsibleEmail" name="responsible_email" required class="w-full p-2 border rounded"/>
+                                </div>
+
+                                <div class="labeled-input">
+                                    <label for="responsiblePassword" class="label">Contraseña</label>
+                                    <input type="password" id="responsiblePassword" name="responsible_password" required class="w-full p-2 border rounded"/>
+                                </div>
+
+                                <div class="labeled-input">
+                                    <label for="confirmPassword" class="label">Confirmar Contraseña</label>
+                                    <input type="password" id="confirmPassword" name="responsible_password_confirmation" required class="w-full p-2 border rounded"/>
+                                </div>
                             </div>
                         </div>
 
+                        <!-- Botones alineados a la derecha -->
                         <div class="flex justify-end mt-3">
-                            <button type="button" onclick="closeModal('createEventModal')" class="btn mr-2">
+                            <button type="button" onclick="closeModal('createEventModal')" class="btn bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded mr-2">
                                 Cancelar
                             </button>
-                            <button type="submit" class="btn">
+                            <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
                                 Crear
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
+
 
             <!-- Modal Confirmar Eliminación -->
             <div id="deleteEventModal"
@@ -228,7 +243,8 @@
         </div>
 
         <div id="startMatchingModal"
-            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+    class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-start justify-center pt-20 hidden">
+
             <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
                 <button onclick="closeModal('startMatchingModal')"
                     class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
@@ -244,16 +260,19 @@
                     <input type="hidden" id="startMatchingEventId" name="event_id">
 
                     <label>Hora de inicio:</label>
-                    <input type="time" id="startsAt" name="starts_at" class="border p-2 rounded mb-2 w-full">
+                    <input type="time" id="startsAt" name="starts_at" required class="border p-2 rounded mb-2 w-full">
 
                     <label>Hora de finalización:</label>
-                    <input type="time" id="endsAt" name="ends_at" class="border p-2 rounded mb-2 w-full">
+                    <input type="time" id="endsAt" name="ends_at" required class="border p-2 rounded mb-2 w-full">
 
+                    <label>Número de reuniones por usuario:</label>
+                    <input type="number" id="meetingsPerUser" name="meetings_per_user" required class="border p-2 rounded mb-2 w-full">
+                    
                     <label>Duración de reuniones (minutos):</label>
-                    <input type="number" id="meetingDuration" name="meeting_duration" class="border p-2 rounded mb-2 w-full">
+                    <input type="number" id="meetingDuration" name="meeting_duration" required class="border p-2 rounded mb-2 w-full">
 
                     <label>Tiempo de descanso entre reuniones (minutos):</label>
-                    <input type="number" id="timeBetweenMeetings" name="time_between_meetings" class="border p-2 rounded mb-2 w-full">
+                    <input type="number" id="timeBetweenMeetings" name="time_between_meetings" required class="border p-2 rounded mb-2 w-full">
 
                     <div class="flex justify-end">
                         <button type="button" onclick="closeModal('startMatchingModal')"
@@ -301,10 +320,12 @@
     <script>
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
+            document.body.style.overflow = "hidden"; // Evita el scroll del body
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
+            document.body.style.overflow = "auto";
         }
 
         function confirmDelete(eventId) {
@@ -322,15 +343,39 @@
         document.getElementById('endsAt').value = endsAt !== 'null' && endsAt ? endsAt : '';
         document.getElementById('meetingDuration').value = meetingDuration !== 'null' && meetingDuration ? meetingDuration : '';
         document.getElementById('timeBetweenMeetings').value = timeBetweenMeetings !== 'null' && timeBetweenMeetings ? timeBetweenMeetings : '';
+        document.getElementById('meetingsPerUser').value = meetingsPerUser !== 'null' && meetingsPerUser ? meetingsPerUser : '';
 
         openModal('startMatchingModal');
-    }
+        }
 
         function confirmEndMatching(eventId) {
             const form = document.getElementById('endMatchingForm');
             form.action = `/events/end-matching/${eventId}`;
             openModal('endMatchingModal');
         }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const startMatchingForm = document.getElementById("startMatchingForm");
+
+            startMatchingForm.addEventListener("submit", function (event) {
+                // Obtener los inputs
+                let startsAtInput = document.getElementById("startsAt");
+                let endsAtInput = document.getElementById("endsAt");
+
+                // Función para formatear la hora correctamente
+                function formatTime(value) {
+                    if (value && value.length === 5) { // Si el formato es HH:MM
+                        return value + ":00";
+                    }
+                    return value; // Si ya tiene segundos, lo deja igual
+                }
+
+                // Modificar los valores antes de enviar
+                startsAtInput.value = formatTime(startsAtInput.value);
+                endsAtInput.value = formatTime(endsAtInput.value);
+            });
+        });
 
 
     </script>

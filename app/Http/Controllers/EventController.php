@@ -65,8 +65,9 @@ class EventController extends Controller {
             $event = $this->repository->create([
                 'title' => $validated['title'],
                 'date' => $validated['date'],
+                'max_participants' => $validated['max_participants'],
             ], $responsible);
-    
+            
             Mail::to($responsible->email)->send(
                 new CreatedEventMail(
                     $event->title,
@@ -113,10 +114,11 @@ class EventController extends Controller {
         }
 
         $validated = $request->validate([
-            'starts_at' => 'nullable|date_format:H:i',
-            'ends_at' => 'nullable|date_format:H:i|after_or_equal:starts_at',
-            'meeting_duration' => 'nullable|integer|min:1',
-            'time_between_meetings' => 'nullable|integer|min:0',
+            'starts_at' => 'required|date_format:H:i:s',
+            'ends_at' => 'required|date_format:H:i:s|after_or_equal:starts_at',
+            'meeting_duration' => 'required|integer|min:1',
+            'time_between_meetings' => 'required|integer|min:0',
+            'meetings_per_user' => 'required|integer|min:1',
         ]);
     
         // Actualizar solo si se envían valores
@@ -125,12 +127,18 @@ class EventController extends Controller {
         $event->status = EventStatus::Matching;
         $event->save();
 
-        $registrations = $event->registrations();
+        $registrations = $event->registrations;
         foreach ($registrations as $registration) {
+            $registration->remaining_meetings=$validated['meetings_per_user'];
+            $registration->save();
             $message = "Ha comenzado la fase de coordinación de reuniones del evento";
             Notification::createNotification($registration->id, $message);
             //Mail::to($participant->email)->send(new MeetingMail($message, 'Pendiente', $event->slug));
+
         }
+
+        
+
 
         return redirect()->route('home')->with('success', 'Fase de matching iniciada correctamente.');
     }

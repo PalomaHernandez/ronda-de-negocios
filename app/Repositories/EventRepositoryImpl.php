@@ -32,6 +32,7 @@ class EventRepositoryImpl implements EventRepository
         return Event::create([
             'title' => $data['title'],
             'date' => $data['date'],
+            'max_participants' => $data['max_participants'],
             'status' => EventStatus::Registration,
             'responsible_id' => $responsible->id,
         ]);

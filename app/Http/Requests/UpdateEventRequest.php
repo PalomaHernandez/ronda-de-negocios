@@ -23,8 +23,8 @@ class UpdateEventRequest extends FormRequest
     {
         return [
             'description' => 'nullable|string',
-            'starts_at' => 'nullable|date_format:H:i',
-            'ends_at' => 'nullable|date_format:H:i',
+            'starts_at' => 'nullable|date_format:H:i:s',
+            'ends_at' => 'nullable|date_format:H:i:s',
             'date' => 'nullable|date',
             'meeting_duration' => 'nullable|integer|min:1',
             'time_between_meetings' => 'nullable|integer|min:0',
