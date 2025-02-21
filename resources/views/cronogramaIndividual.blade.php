@@ -46,7 +46,7 @@
     <tbody>
         @forelse($meetings as $meeting)
             <tr>
-                <td>{{ $meeting->time }}</td>
+                <td>{{ $meeting->formatted_time }}</td>
                 <td>{{ $meeting->assigned_table ?? 'No asignada' }}</td>
                 <td>{{ $meeting->participant_role }}</td>
                 <td>{{ $meeting->other_participant_name }}</td>

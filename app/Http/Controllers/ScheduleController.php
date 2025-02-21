@@ -6,6 +6,7 @@ use App\Models\Meeting;
 use App\Models\User;
 use App\Models\Event;
 use PDF;
+use Carbon\Carbon;
 
 class ScheduleController extends Controller
 {
@@ -23,7 +24,8 @@ class ScheduleController extends Controller
          
             $receiver = User::find($meeting->receiver_id);
             $receiverName = $receiver ? $receiver->name : 'Desconocido';
-
+            
+            $meeting->formatted_time = Carbon::parse($meeting->time)->format('H:i');
    
             $meeting->requester_name = $requesterName;
             $meeting->receiver_name = $receiverName;
@@ -33,7 +35,6 @@ class ScheduleController extends Controller
 
         
         return $pdf->stream('cronograma.pdf');
-        //return $pdf->download('cronograma.pdf');
     }
     public function participantPDF($eventId, $userId)
     {
@@ -57,10 +58,12 @@ class ScheduleController extends Controller
             $otherParticipantId = ($meeting->requester_id == $userId)
                 ? $meeting->receiver_id
                 : $meeting->requester_id;
-
+            
             $otherUser = User::find($otherParticipantId);
             $meeting->other_participant_name = $otherUser ? $otherUser->name : 'Desconocido';
 
+            $meeting->formatted_time = Carbon::parse($meeting->time)->format('H:i');
+            
             switch ($meeting->requester_role) {
                 case 'Demandante':
                     $meeting->participant_role = ($meeting->requester_id == $userId) ? 'Demandante' : 'Oferente';

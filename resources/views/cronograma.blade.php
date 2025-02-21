@@ -42,7 +42,7 @@
         </thead>
         <tbody>
             @php
-                $reunionesPorHora = $meetings->groupBy('time');
+                $reunionesPorHora = $meetings->groupBy('formatted_time');
             @endphp
 
             @foreach($reunionesPorHora as $hora => $reuniones)
