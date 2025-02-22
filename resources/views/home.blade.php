@@ -11,13 +11,14 @@
 
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
     <!-- Header -->
-    <header class="bg-white shadow-md fixed top-0 left-0 w-full z-10">
+    <header class="bg-sky-900 shadow-md fixed top-0 left-0 w-full z-10">
         <div class="container mx-auto flex justify-between items-center py-4 px-6">
-            <h1 class="text-xl font-bold text-gray-800">Rondas UNS Admin</h1>
+        <img src="{{ asset('public/images/rondas-uns.png') }}" alt="Rondas UNS" class="h-10">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn">
+                <button type="submit" class="btn-logout">
                     Cerrar sesión
+                    <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </form>
         </div>
@@ -27,7 +28,7 @@
     <main class="container mx-auto mt-28 px-4">
         <!-- Mensajes de sesión -->
         @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <div class="aler alert-danger" role="alert">
                 <strong class="font-bold">Hubo algunos errores:</strong>
                 <ul class="mt-2">
                     @foreach ($errors->all() as $error)
@@ -37,12 +38,12 @@
             </div>
         @endif
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            <div class="aler alert-success">
                 {{ session('success') }}
             </div>
         @endif
         @if (session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <div class="alert alert-danger">
                 {{ session('error') }}
             </div>
         @endif
@@ -52,7 +53,7 @@
         <div class="bg-white shadow-md my-6 ">
             <table class="table-auto w-full border-gray-300">
                 <thead>
-                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm font-mono">
                         <th class="py-3 px-6 text-center">Nombre del Evento</th>
                         <th class="py-3 px-6 text-center">Fecha</th>
                         <th class="py-3 px-6 text-center">Estado</th>
@@ -67,12 +68,11 @@
                                 {{ \Carbon\Carbon::parse($event->date)->format('d-m-Y') }}
                             </td>
                             <td class="py-3 px-6 text-center relative">
-                                <span 
-                                class="py-1 px-3 rounded-full text-xs
-                                    @if ($event->status->value === 'Inscripcion') bg-blue-500 text-white
-                                    @elseif ($event->status->value === 'Matcheo') bg-yellow-500 text-white
-                                    @elseif ($event->status->value === 'Terminado') bg-green-500 text-white
-                                    @endif">
+                                <span class="py-1 px-3 rounded-full text-xs
+                                        @if ($event->status->value === 'Inscripcion') bg-sky-600 text-white
+                                        @elseif ($event->status->value === 'Matcheo') bg-amber-600 text-white
+                                        @elseif ($event->status->value === 'Terminado') bg-emerald-600 text-white
+                                        @endif">
                                     {{ $event->status ?? 'N/A' }}
                                 </span>
                             </td>
@@ -96,18 +96,18 @@
                                             </template>
                                         </li>
                                         <li>
-                                        <template x-if="'{{ $event->status }}' === 'Inscripcion'">
-                                            <button onclick="startMatching(
-                                                {{ $event->id }},
-                                                '{{ $event->starts_at ?? 'null' }}',
-                                                '{{ $event->ends_at ?? 'null' }}',
-                                                '{{ $event->meeting_duration ?? 'null' }}',
-                                                '{{ $event->time_between_meetings ?? 'null' }}')
-                                                '{{ $event->meetings_per_user ?? 'null' }}'"
-                                                class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center">
-                                                <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo
-                                            </button>
-                                        </template>
+                                            <template x-if="'{{ $event->status }}' === 'Inscripcion'">
+                                                <button onclick="startMatching(
+                                                    {{ $event->id }},
+                                                    '{{ $event->starts_at ?? 'null' }}',
+                                                    '{{ $event->ends_at ?? 'null' }}',
+                                                    '{{ $event->meeting_duration ?? 'null' }}',
+                                                    '{{ $event->time_between_meetings ?? 'null' }}')
+                                                    '{{ $event->meetings_per_user ?? 'null' }}'"
+                                                    class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center">
+                                                    <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo
+                                                </button>
+                                            </template>
                                         </li>
                                         <li>
                                             <template x-if="'{{ $event->status }}' === 'Matcheo'">
@@ -136,7 +136,7 @@
 
         <!-- Botón Crear Evento -->
         <div class="flex justify-end mt-6">
-            <button class="btn-create" onclick="openModal('createEventModal')">
+            <button class="btn-green" onclick="openModal('createEventModal')">
                 Crear Evento
             </button>
         </div>
@@ -144,67 +144,73 @@
         <!-- Modales -->
         <div id="modals">
             <!-- Modal Crear Evento -->
-           <div id="createEventModal"
+            <div id="createEventModal"
                 class="absolute top-16 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
                 <div class="bg-white p-6 rounded shadow-lg w-2/3 relative mt-10 mb-10">
                     <!-- Botón de cierre -->
-                    <button onclick="closeModal('createEventModal')" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                    <button onclick="closeModal('createEventModal')"
+                        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
                         <i class="fa-solid fa-xmark text-xl"></i>
                     </button>
 
                     <h2 class="text-xl font-bold mb-4">Crear Evento</h2>
-                    
+
                     <form action="{{ route('events.create') }}" method="POST">
                         @csrf
-                        
+
                         <!-- Sección Título y Fecha (Dos columnas) -->
                         <div class="grid grid-cols-3 gap-4">
                             <div class="labeled-input">
                                 <label for="title" class="label">Título</label>
-                                <input type="text" id="title" name="title" required class="w-full p-2 border rounded"/>
+                                <input type="text" id="title" name="title" required class="w-full p-2 border rounded" />
                             </div>
 
                             <div class="labeled-input">
                                 <label for="date" class="label">Fecha</label>
-                                <input type="date" id="date" name="date" required class="w-full p-2 border rounded"/>
+                                <input type="date" id="date" name="date" required class="w-full p-2 border rounded" />
                             </div>
                             <div class="labeled-input">
-                                <label for="maxParticipants" class="label">Máx. Participantes</label>
-                                <input type="number" id="maxParticipants" name="max_participants" min="1" required class="w-full p-2 border rounded"/>
+                                <label for="maxParticipants" class="label">Máxima cantidad de participantes</label>
+                                <input type="number" id="maxParticipants" name="max_participants" min="1" required
+                                    class="w-full p-2 border rounded" />
                             </div>
 
                         </div>
 
                         <!-- Asignar Responsable -->
                         <hr class="">
-                        <div class="p-3 border rounded">
+                        <div class="p-3 border rounded-lg">
                             <h3 class="font-semibold text-gray-700 mb-2">Asignar Responsable</h3>
 
                             <!-- Sección de Responsable en dos columnas -->
                             <div class="grid grid-cols-3 gap-4">
-                            <div class="labeled-input">
+                                <div class="labeled-input">
                                     <label for="responsibleEmail" class="label">Email</label>
-                                    <input type="email" id="responsibleEmail" name="responsible_email" required class="w-full p-2 border rounded"/>
+                                    <input type="email" id="responsibleEmail" name="responsible_email" required
+                                        class="w-full p-2 border rounded" />
                                 </div>
 
                                 <div class="labeled-input">
                                     <label for="responsiblePassword" class="label">Contraseña</label>
-                                    <input type="password" id="responsiblePassword" name="responsible_password" required class="w-full p-2 border rounded"/>
+                                    <input type="password" id="responsiblePassword" name="responsible_password" required
+                                        class="w-full p-2 border rounded" />
                                 </div>
 
                                 <div class="labeled-input">
                                     <label for="confirmPassword" class="label">Confirmar Contraseña</label>
-                                    <input type="password" id="confirmPassword" name="responsible_password_confirmation" required class="w-full p-2 border rounded"/>
+                                    <input type="password" id="confirmPassword" name="responsible_password_confirmation"
+                                        required class="w-full p-2 border rounded" />
                                 </div>
                             </div>
                         </div>
 
                         <!-- Botones alineados a la derecha -->
                         <div class="flex justify-end mt-3">
-                            <button type="button" onclick="closeModal('createEventModal')" class="btn bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded mr-2">
+                            <button type="button" onclick="closeModal('createEventModal')"
+                                class="btn-gray">
                                 Cancelar
                             </button>
-                            <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+                            <button type="submit" class="btn">
                                 Crear
                             </button>
                         </div>
@@ -229,10 +235,10 @@
                         <input type="hidden" id="deleteEventId" name="event_id">
                         <div class="flex justify-end">
                             <button type="button" onclick="closeModal('deleteEventModal')"
-                                class="bg-gray-500 text-white px-4 py-2 rounded mr-2">
+                                class="btn-gray">
                                 Cancelar
                             </button>
-                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                                 Eliminar
                             </button>
                         </div>
@@ -242,7 +248,7 @@
         </div>
 
         <div id="startMatchingModal"
-    class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-start justify-center pt-20 hidden">
+            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-start justify-center pt-20 hidden mt-10">
 
             <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
                 <button onclick="closeModal('startMatchingModal')"
@@ -265,20 +271,23 @@
                     <input type="time" id="endsAt" name="ends_at" required class="border p-2 rounded mb-2 w-full">
 
                     <label>Número de reuniones por usuario:</label>
-                    <input type="number" id="meetingsPerUser" name="meetings_per_user" required class="border p-2 rounded mb-2 w-full">
-                    
+                    <input type="number" id="meetingsPerUser" name="meetings_per_user" required
+                        class="border p-2 rounded mb-2 w-full">
+
                     <label>Duración de reuniones (minutos):</label>
-                    <input type="number" id="meetingDuration" name="meeting_duration" required class="border p-2 rounded mb-2 w-full">
+                    <input type="number" id="meetingDuration" name="meeting_duration" required
+                        class="border p-2 rounded mb-2 w-full">
 
                     <label>Tiempo de descanso entre reuniones (minutos):</label>
-                    <input type="number" id="timeBetweenMeetings" name="time_between_meetings" required class="border p-2 rounded mb-2 w-full">
+                    <input type="number" id="timeBetweenMeetings" name="time_between_meetings" required
+                        class="border p-2 rounded mb-2 w-full">
 
                     <div class="flex justify-end">
                         <button type="button" onclick="closeModal('startMatchingModal')"
-                            class="bg-gray-500 text-white px-4 py-2 rounded mr-2">
+                            class="btn-gray">
                             Cancelar
                         </button>
-                        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded">
+                        <button type="submit" class="btn">
                             Iniciar
                         </button>
                     </div>
@@ -302,10 +311,10 @@
                     <input type="hidden" id="endMatchingEventId" name="event_id">
                     <div class="flex justify-end">
                         <button type="button" onclick="closeModal('endMatchingModal')"
-                            class="bg-gray-500 text-white px-4 py-2 rounded mr-2">
+                            class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">
                             Cancelar
                         </button>
-                        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded">
+                        <button type="submit" class="btn">
                             Terminar
                         </button>
                     </div>
@@ -334,17 +343,17 @@
         }
 
         function startMatching(eventId, startsAt, endsAt, meetingDuration, timeBetweenMeetings) {
-        // Asignar la acción del formulario
-        document.getElementById('startMatchingForm').action = `/events/start-matching/${eventId}`;
+            // Asignar la acción del formulario
+            document.getElementById('startMatchingForm').action = `/events/start-matching/${eventId}`;
 
-        // Llenar los valores existentes en los inputs (si los hay)
-        document.getElementById('startsAt').value = startsAt !== 'null' && startsAt ? startsAt : '';
-        document.getElementById('endsAt').value = endsAt !== 'null' && endsAt ? endsAt : '';
-        document.getElementById('meetingDuration').value = meetingDuration !== 'null' && meetingDuration ? meetingDuration : '';
-        document.getElementById('timeBetweenMeetings').value = timeBetweenMeetings !== 'null' && timeBetweenMeetings ? timeBetweenMeetings : '';
-        document.getElementById('meetingsPerUser').value = meetingsPerUser !== 'null' && meetingsPerUser ? meetingsPerUser : '';
+            // Llenar los valores existentes en los inputs (si los hay)
+            document.getElementById('startsAt').value = startsAt !== 'null' && startsAt ? startsAt : '';
+            document.getElementById('endsAt').value = endsAt !== 'null' && endsAt ? endsAt : '';
+            document.getElementById('meetingDuration').value = meetingDuration !== 'null' && meetingDuration ? meetingDuration : '';
+            document.getElementById('timeBetweenMeetings').value = timeBetweenMeetings !== 'null' && timeBetweenMeetings ? timeBetweenMeetings : '';
+            document.getElementById('meetingsPerUser').value = meetingsPerUser !== 'null' && meetingsPerUser ? meetingsPerUser : '';
 
-        openModal('startMatchingModal');
+            openModal('startMatchingModal');
         }
 
         function confirmEndMatching(eventId) {

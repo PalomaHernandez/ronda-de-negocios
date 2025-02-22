@@ -44,11 +44,19 @@
 }
 
 .btn {
-	@apply text-white bg-blue-500 font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none
+	@apply text-white bg-sky-700 font-semibold py-2 px-4 rounded-lg hover:bg-sky-800 focus:outline-none
 }
 
-.btn-create {
-	@apply text-white bg-green-500 py-2 px-4 rounded-lg hover:bg-green-600 focus:outline-none
+.btn-green { 
+	@apply text-white bg-emerald-600 font-semibold py-2 px-4 rounded-lg hover:bg-emerald-700 focus:outline-none
+}
+
+.btn-gray {
+	@apply text-white bg-gray-500 font-semibold py-2 px-4 rounded-lg hover:bg-gray-600 focus:outline-none mr-2
+}
+
+.btn-logout{
+	@apply text-white font-semibold py-2 px-4 rounded-lg hover:text-gray-200 focus:outline-none
 }
 
 .btn-primary {

@@ -17,7 +17,6 @@ use App\Repositories\Interfaces\UserRepository;
 use App\Repositories\UserRepositoryImpl;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Vite;
 
 class AppServiceProvider extends ServiceProvider
 {

@@ -32,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->group('api', [
             EnsureFrontendRequestsAreStateful::class,
+            \Illuminate\Http\Middleware\HandleCors::class,
             ThrottleRequests::class, 
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);

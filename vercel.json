@@ -5,7 +5,18 @@
     },
     "routes": [
         { "src": "/build/(.*)", "dest": "/public/build/$1" },
-        { "src": "/(.*)", "dest": "/api/index.php" }
+        { "src": "/(.*)", "dest": "/api/index.php" },
+        {
+            "src": "/api/(.*)",
+            "dest": "/public/index.php",
+            "headers": {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
+              "Access-Control-Allow-Headers": "Content-Type, Authorization",
+              "Access-Control-Allow-Credentials": "true"
+            }
+        },
+        { "src": "/images/(.*)", "dest": "/public/images/$1" }
     ],
     "env": {
         "APP_ENV": "production",
