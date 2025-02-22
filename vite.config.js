@@ -9,8 +9,13 @@ export default defineConfig({
         }),
     ],
     build: {
-        outDir: 'public/build', 
-        manifest: true,          
+        outDir: 'public/build',
+        emptyOutDir: true,    
+        rollupOptions: {
+            output: {
+                assetFileNames: "assets/[name]-[hash][extname]",
+                entryFileNames: "assets/[name]-[hash].js",
+            },
+        },     
       },
-    base: '/build/',
 });
