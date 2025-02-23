@@ -11,7 +11,7 @@
 <body class="bg-gray-100">
     <header class="bg-sky-900 shadow-md fixed top-0 left-0 w-full z-10">
         <div class="container mx-auto flex justify-between items-center py-4 px-6">
-        <img src="{{ asset('public/images/rondas-uns.png') }}" alt="Rondas UNS" class="h-10">
+        <img src="{{ asset('images/rondas-uns.png') }}" alt="Rondas UNS" class="h-10">
         </div>
     </header>
     <div class="container mx-auto">
