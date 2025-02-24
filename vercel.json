@@ -14,7 +14,7 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "http://rondas-uns.com",
+        "APP_URL": "https://rondas-uns.vercel.app",
         "APP_KEY": "base64:fax7xBina3JsFf+f/8yzkZqR8RAtC1lR2uJtCFdtQ99=",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",

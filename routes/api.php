@@ -4,7 +4,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\auth\LoginController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\ScheduleController;
@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/update-registration/{eventId}/{user_id}', [RegistrationController::class, 'update']);
 });
 
-Route::get('events/{slug}', [EventController::class, 'getEvent']);
+Route::get('/events/{slug}', [EventController::class, 'getEvent']);
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [UserController::class, 'store']);
 
