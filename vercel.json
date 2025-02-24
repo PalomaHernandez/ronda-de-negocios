@@ -9,12 +9,13 @@
         {
             "src": "/api/(.*)",
             "dest": "/public/index.php"
-        }
+        },
+        { "src": "/storage/(.*)", "dest": "/public/storage/$1" }
     ],
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://rondas-uns.vercel.app",
+        "APP_URL": "https://rondas-uns-admin.vercel.app",
         "APP_KEY": "base64:fax7xBina3JsFf+f/8yzkZqR8RAtC1lR2uJtCFdtQ99=",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
