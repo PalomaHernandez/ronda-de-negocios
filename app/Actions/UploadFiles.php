@@ -17,12 +17,17 @@ class UploadFiles {
             $extension = $file->getClientOriginalExtension();
             $fileName = uuid_create() . '.' . $extension;
 
-            $path = Storage::disk('public')->putFileAs('files', $file, $fileName);
+            //$path = Storage::disk('public')->putFileAs('files', $file, $fileName);
+            // Guardar el archivo directamente en "public/uploads"
+            $destinationPath = public_path('uploads');
+            $file->move($destinationPath, $fileName);
 
+            // Guardar la URL correctamente
+            $url = url('uploads/' . $fileName);
             if ($type === 'logo') {
-                $event->update(['logo_path' => $path, 'logo_url' => url('storage/' . $path)]);
+                $event->update(['logo_path' => $destinationPath, 'logo_url' => $url]);
             } else {
-                $event->files()->create(['path' => $path,'url' => url('storage/' . $path), 'original_name' => $fileOriginalName]);
+                $event->files()->create(['path' => $destinationPath,'url' => $url, 'original_name' => $fileOriginalName]);
             }
         }
     

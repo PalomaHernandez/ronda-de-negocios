@@ -10,7 +10,11 @@
             "src": "/api/(.*)",
             "dest": "/public/index.php"
         },
-        { "src": "/storage/(.*)", "dest": "/public/storage/$1" }
+        { "src": "/storage/(.*)", "dest": "/public/storage/$1" },
+        {
+            "src": "/uploads/(.*)",
+            "dest": "/public/uploads/$1"
+          }
     ],
     "env": {
         "APP_ENV": "production",
