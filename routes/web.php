@@ -20,3 +20,7 @@ Route::middleware(['auth', 'admin'])->group(function (){
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
+
+Route::get('/debug-files', function () {
+    return response()->json(scandir(public_path('storage/images')));
+});
