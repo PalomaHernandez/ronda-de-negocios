@@ -9,10 +9,14 @@
 </head>
 
 <body class="bg-gray-100">
-    <header class="bg-sky-900 shadow-md fixed top-0 left-0 w-full z-10">
-        <div class="container mx-auto flex justify-between items-center py-4 px-6">
-        <img src="{{ asset('/images/rondas-uns.png') }}" alt="Rondas UNS" class="h-10">
-    </header>
+<header class="bg-sky-900 shadow-md fixed top-0 left-0 w-full z-10 h-[8vh] flex items-center px-6">
+    <div class="container mx-auto flex justify-between items-center w-full">
+        <div class="h-20 w-60 flex items-center">
+            <img src="{{ asset('/images/rondas-uns.png') }}" alt="Rondas UNS" class="h-15 w-60">
+        </div>
+    </div>
+</header>
+
     <div class="container mx-auto">
         <div class="flex justify-center items-center h-screen">
             <div class="w-full max-w-md">

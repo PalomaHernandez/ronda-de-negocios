@@ -11,18 +11,21 @@
 
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
     <!-- Header -->
-    <header class="bg-sky-900 shadow-md fixed top-0 left-0 w-full z-10">
-        <div class="container mx-auto flex justify-between items-center py-4 px-6">
-        <img src="/images/rondas-uns.png" alt="Rondas UNS" class="h-10">
+    <header class="bg-sky-900 shadow-md fixed top-0 left-0 w-full z-10 h-[8vh] flex items-center px-6">
+        <div class="container mx-auto flex justify-between items-center w-full">
+            <div class="h-20 w-60 flex items-center">
+                <img src="/images/rondas-uns.png" alt="Rondas UNS" class="h-15 w-60">
+            </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn-logout">
-                    Cerrar sesión
+                <button type="submit" class="text-white text-sm sm:text-lg flex items-center space-x-2">
+                    <span>Cerrar sesión</span>
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </form>
         </div>
     </header>
+
 
     <!-- Contenido Principal -->
     <main class="container mx-auto mt-28 px-4">
