@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('description')->nullable();
             $table->string('location')->nullable();
-            $table->string('logo_path')->nullable();
+            $table->string('logo_public_id')->nullable();
             $table->string('logo_url')->nullable();
             $table->date('date');
             $table->time('starts_at')->nullable();

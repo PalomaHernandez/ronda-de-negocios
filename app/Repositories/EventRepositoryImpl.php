@@ -6,6 +6,7 @@ use App\Actions\UploadFiles;
 use App\Models\Event;
 use App\Models\User;
 use App\Repositories\Interfaces\EventRepository;
+use App\Services\CloudinaryService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use App\Patterns\State\Event\EventStatus;
@@ -40,7 +41,7 @@ class EventRepositoryImpl implements EventRepository
     public function update(int $id, array $data): void{
         $event= $this->getById($id);
 
-        $currentLogo = $event->logo_path;
+        $currentLogo = $event->logo_public_id;
 
         $event->update($data);
 
@@ -48,23 +49,23 @@ class EventRepositoryImpl implements EventRepository
         foreach ($deletedFiles as $fileId) {
             $file = File::find($fileId);
             if ($file) {
-                Storage::delete($file->path);
+                CloudinaryService::delete($file->public_id);
                 $file->delete();
             }
         }
 
         if (request()->hasFile('logo')) {
             if ($currentLogo) {
-                Storage::delete($currentLogo);
+                CloudinaryService::delete($currentLogo);
             }
 			UploadFiles::execute($event, 'logo');
 		} else if(request()->input('deleteLogo') === 'true'){
             Log::info("Logo eliminar");
             Log::info($currentLogo);
             if ($currentLogo) {
-                Storage::delete($currentLogo);
-                $event->logo_path = null;
+                CloudinaryService::delete($currentLogo);
                 $event->logo_url = null;
+                $event->logo_public_id = null;
                 $event->save();
             }
         }

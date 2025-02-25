@@ -2,8 +2,7 @@
 namespace App\Actions;
 
 use App\Models\User;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
+use App\Services\CloudinaryService;
 
 class UploadImages
 {
@@ -14,15 +13,14 @@ class UploadImages
         : request()->file('gallery');
 
         foreach ($images as $image) {
-            $extension = $image->getClientOriginalExtension();
-            $imageName = uuid_create() . '.' . $extension;
-
-            $path = Storage::disk('public')->putFileAs('images', $image, $imageName);
+            $uploadData = CloudinaryService::upload($image);
 
             if ($type === 'logo') {
-                $user->update(['logo_path' => $path,'logo_url' => url('storage/' . $path)]);
+                $user->update(['logo_url' => $uploadData['url'],
+                    'logo_public_id' => $uploadData['public_id']]);
             } else {
-                $user->images()->create(['path' => $path,'url' => url('storage/' . $path)]);
+                $user->images()->create(['url' => $uploadData['url'],
+                    'public_id' => $uploadData['public_id']]);
             }
         }
     }

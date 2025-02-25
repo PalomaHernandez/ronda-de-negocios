@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\Models\Event;
-use Illuminate\Support\Facades\Storage;
+use App\Services\CloudinaryService;
 
 class UploadFiles {
 
@@ -13,21 +13,15 @@ class UploadFiles {
         : request()->file('documents');
 
 		foreach ($files as $file) {
-			$fileOriginalName = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $fileName = uuid_create() . '.' . $extension;
+			$uploadData = CloudinaryService::upload($file);
 
-            //$path = Storage::disk('public')->putFileAs('files', $file, $fileName);
-            // Guardar el archivo directamente en "public/uploads"
-            $destinationPath = public_path('uploads');
-            $file->move($destinationPath, $fileName);
-
-            // Guardar la URL correctamente
-            $url = url('uploads/' . $fileName);
             if ($type === 'logo') {
-                $event->update(['logo_path' => $destinationPath, 'logo_url' => $url]);
+                $event->update(['logo_url' => $uploadData['url'],
+                    'logo_public_id' => $uploadData['public_id']]);
             } else {
-                $event->files()->create(['path' => $destinationPath,'url' => $url, 'original_name' => $fileOriginalName]);
+                $event->files()->create(['url' => $uploadData['url'],
+                    'public_id' => $uploadData['public_id'],
+                    'original_name' => $file->getClientOriginalName()]);
             }
         }
     

@@ -20,7 +20,7 @@ class User extends Authenticatable {
 		'activity',
 		'location',
 		'website',
-		'logo_path',
+		'logo_public_id',
 		'logo_url',
 	];
 

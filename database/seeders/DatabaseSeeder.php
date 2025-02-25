@@ -12,7 +12,6 @@ use App\Models\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -121,8 +120,6 @@ class DatabaseSeeder extends Seeder
                 'ends_at' => '17:00:00',
                 'inscription_end_date' => '2025-05-10T23:59',
                 'matching_end_date' => '2025-05-10T23:59',
-                'logo_path' => 'images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
-                'logo_url' => 'http://127.0.0.1:8000/storage/images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
                 'slug' => Str::slug('Congreso de Tecnología 2025'),
                 'responsible_id' => $responsible->id,
             ],
@@ -135,8 +132,6 @@ class DatabaseSeeder extends Seeder
                 'matching_end_date' => '2025-05-10T23:59',
                 'starts_at' => '09:00:00',
                 'ends_at' => '17:00:00',
-                'logo_path' => 'images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
-                'logo_url' => 'http://127.0.0.1:8000/storage/images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
                 'slug' => Str::slug('Feria de Innovación'),
                 'responsible_id' => $responsible->id,
             ],
@@ -149,8 +144,6 @@ class DatabaseSeeder extends Seeder
                 'date' => now()->addMonths(1),
                 'starts_at' => '09:00:00',
                 'ends_at' => '17:00:00',
-                'logo_path' => 'images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
-                'logo_url' => 'http://127.0.0.1:8000/storage/images/da2016f0-cf93-4c0e-b28e-6ac854609b4b.jpg',
                 'slug' => Str::slug('Cumbre Empresarial 2025'),
                 'responsible_id' => $responsible->id,
             ]
@@ -169,10 +162,6 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
-
- 	File::factory(10)->create();
-	Image::factory(10)->create();
-
 
         $meetings = [
             ['title' => 'Reunión de Networking', 'reason' => 'Intercambio de ideas y colaboración'],

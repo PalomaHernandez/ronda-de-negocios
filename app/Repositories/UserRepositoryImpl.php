@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Repositories\Interfaces\UserRepository;
 use App\Models\User;
 use App\Models\Image;
+use App\Services\CloudinaryService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Actions\UploadImages;
@@ -56,7 +57,7 @@ class UserRepositoryImpl implements UserRepository
 		foreach ($images as $imageId) {
             $image = Image::find($imageId);
             if ($image) {
-                Storage::delete($image->path);
+                CloudinaryService::delete($image->public_id);
                 $image->delete();
             }
         }

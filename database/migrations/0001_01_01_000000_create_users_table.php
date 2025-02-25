@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('activity')->nullable();
             $table->string('location')->nullable();
             $table->string('website')->nullable();
-            $table->string('logo_path')->nullable();
+            $table->string('logo_public_id')->nullable();
             $table->string('logo_url')->nullable();
             $table->rememberToken();
             $table->timestamps();
