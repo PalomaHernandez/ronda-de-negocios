@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Models\Event;
 use App\Services\CloudinaryService;
+use Illuminate\Support\Facades\Log;
 
 class UploadFiles {
 
@@ -13,6 +14,7 @@ class UploadFiles {
         : request()->file('documents');
 
 		foreach ($files as $file) {
+            Log::info($file);
 			$uploadData = CloudinaryService::upload($file);
 
             if ($type === 'logo') {
