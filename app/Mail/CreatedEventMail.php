@@ -42,7 +42,7 @@ class CreatedEventMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.event-created',
+            view: 'emails.event_created',
         );
     }
 

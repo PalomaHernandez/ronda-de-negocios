@@ -31,7 +31,7 @@ class ScheduleController extends Controller
             $meeting->receiver_name = $receiverName;
         }
 
-        $pdf = PDF::loadView('cronograma', compact('meetings', 'eventId'));
+        $pdf = PDF::loadView('schedules.generalSchedule', compact('meetings', 'eventId'));
 
         
         return $pdf->stream('cronograma.pdf');
@@ -79,7 +79,7 @@ class ScheduleController extends Controller
             }
         }
 
-        $pdf = PDF::loadView('cronogramaIndividual', compact('meetings', 'event', 'userName'));
+        $pdf = PDF::loadView('schedules.individualSchedule', compact('meetings', 'event', 'userName'));
 
         if (request()->expectsJson()) {
             return $pdf->download('cronograma_individual.pdf');
