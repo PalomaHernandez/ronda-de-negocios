@@ -137,9 +137,6 @@ class EventController extends Controller {
 
         }
 
-        
-
-
         return redirect()->route('home')->with('success', 'Fase de matching iniciada correctamente.');
     }
 

@@ -1,23 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layout.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title')
+	Iniciar sesión
+@endsection
 
-<body class="bg-gray-100">
-<header class="bg-sky-900 shadow-md fixed top-0 left-0 w-full z-10 h-[8vh] flex items-center px-6">
-    <div class="container mx-auto flex justify-between items-center w-full">
-        <div class="h-20 w-60 flex items-center">
-            <img src="{{ asset('/images/rondas-uns.png') }}" alt="Rondas UNS" class="h-15 w-60">
-        </div>
-    </div>
-</header>
-
-    <div class="container mx-auto">
+@section('content')
+<div class="container mx-auto">
         <div class="flex justify-center items-center h-screen">
             <div class="w-full max-w-md">
                 <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -64,6 +52,7 @@
             </div>
         </div>
     </div>
-</body>
+@endsection
 
-</html>
+
+

@@ -15,9 +15,5 @@ interface EventRepository
     public function create(array $data, User $responsible): Event;
     public function update(int $id, array $data): void;
     public function delete(int $id): void;
-
-    public function addFileToEvent(int $event_id, array $fileData): void;
-    public function getFilesByEvent(int $event_id): void;
-
-    public function deleteFileFromEvent(int $event_id): void;
+    public function isResponsible($user_id, $event_slug): bool;
 }

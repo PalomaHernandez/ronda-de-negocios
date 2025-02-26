@@ -1,37 +1,14 @@
-<!DOCTYPE html>
-<html lang="es">
+@extends('layout.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rondas UNS Admin</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</head>
+@section('title')
+    Eventos
+@endsection
 
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
-    <!-- Header -->
-    <header class="bg-sky-900 shadow-md fixed top-0 left-0 w-full z-10 h-[8vh] flex items-center px-6">
-        <div class="container mx-auto flex justify-between items-center w-full">
-            <div class="h-20 w-60 flex items-center">
-                <img src="/images/rondas-uns.png" alt="Rondas UNS" class="h-15 w-60">
-            </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="text-white text-sm sm:text-lg flex items-center space-x-2">
-                    <span>Cerrar sesión</span>
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </button>
-            </form>
-        </div>
-    </header>
-
-
-    <!-- Contenido Principal -->
-    <main class="container mx-auto mt-28 px-4">
+@section('content')
+    <main class="mt-28 w-full p-4">
         <!-- Mensajes de sesión -->
         @if ($errors->any())
-            <div class="aler alert-danger" role="alert">
+            <div class="alert alert-danger" role="alert">
                 <strong class="font-bold">Hubo algunos errores:</strong>
                 <ul class="mt-2">
                     @foreach ($errors->all() as $error)
@@ -41,7 +18,7 @@
             </div>
         @endif
         @if (session('success'))
-            <div class="aler alert-success">
+            <div class="alert alert-success">
                 {{ session('success') }}
             </div>
         @endif
@@ -53,8 +30,8 @@
 
 
         <!-- Tabla de eventos -->
-        <div class="bg-white shadow-md my-6 ">
-            <table class="table-auto w-full border-gray-300">
+        <div class="bg-white shadow-md my-6 w-full">
+            <table class="table-auto border-gray-300 overflow-y-auto w-full">
                 <thead>
                     <tr class="bg-gray-200 text-gray-600 uppercase text-sm font-mono">
                         <th class="py-3 px-6 text-center">Nombre del Evento</th>
@@ -63,7 +40,7 @@
                         <th class="py-3 px-6 text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="text-gray-600 text-sm font-light">
+                <tbody class="text-gray-600 bg-white text-sm font-light">
                     @foreach ($events as $event)
                         <tr class="border-b border-gray-200 hover:bg-gray-100">
                             <td class="py-3 px-6 text-center relative">{{ $event->title }}</td>
@@ -72,10 +49,10 @@
                             </td>
                             <td class="py-3 px-6 text-center relative">
                                 <span class="py-1 px-3 rounded-full text-xs
-                                        @if ($event->status->value === 'Inscripcion') bg-sky-600 text-white
-                                        @elseif ($event->status->value === 'Matcheo') bg-amber-600 text-white
-                                        @elseif ($event->status->value === 'Terminado') bg-emerald-600 text-white
-                                        @endif">
+                                                        @if ($event->status->value === 'Inscripcion') bg-sky-600 text-white
+                                                        @elseif ($event->status->value === 'Matcheo') bg-amber-600 text-white
+                                                        @elseif ($event->status->value === 'Terminado') bg-emerald-600 text-white
+                                                        @endif">
                                     {{ $event->status ?? 'N/A' }}
                                 </span>
                             </td>
@@ -101,12 +78,12 @@
                                         <li>
                                             <template x-if="'{{ $event->status }}' === 'Inscripcion'">
                                                 <button onclick="startMatching(
-                                                    {{ $event->id }},
-                                                    '{{ $event->starts_at ?? 'null' }}',
-                                                    '{{ $event->ends_at ?? 'null' }}',
-                                                    '{{ $event->meeting_duration ?? 'null' }}',
-                                                    '{{ $event->time_between_meetings ?? 'null' }}')
-                                                    '{{ $event->meetings_per_user ?? 'null' }}'"
+                                                                    {{ $event->id }},
+                                                                    '{{ $event->starts_at ?? 'null' }}',
+                                                                    '{{ $event->ends_at ?? 'null' }}',
+                                                                    '{{ $event->meeting_duration ?? 'null' }}',
+                                                                    '{{ $event->time_between_meetings ?? 'null' }}')
+                                                                    '{{ $event->meetings_per_user ?? 'null' }}'"
                                                     class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center">
                                                     <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo
                                                 </button>
@@ -148,8 +125,8 @@
         <div id="modals">
             <!-- Modal Crear Evento -->
             <div id="createEventModal"
-                class="absolute top-16 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
-                <div class="bg-white p-6 rounded shadow-lg w-2/3 relative mt-10 mb-10">
+                class="fixed inset-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl relative">
                     <!-- Botón de cierre -->
                     <button onclick="closeModal('createEventModal')"
                         class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
@@ -162,7 +139,7 @@
                         @csrf
 
                         <!-- Sección Título y Fecha (Dos columnas) -->
-                        <div class="grid grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="labeled-input">
                                 <label for="title" class="label">Título</label>
                                 <input type="text" id="title" name="title" required class="w-full p-2 border rounded" />
@@ -177,16 +154,14 @@
                                 <input type="number" id="maxParticipants" name="max_participants" min="1" required
                                     class="w-full p-2 border rounded" />
                             </div>
-
                         </div>
 
                         <!-- Asignar Responsable -->
-                        <hr class="">
-                        <div class="p-3 border rounded-lg">
+                        <div class="p-3 border rounded-lg mt-6">
                             <h3 class="font-semibold text-gray-700 mb-2">Asignar Responsable</h3>
 
                             <!-- Sección de Responsable en dos columnas -->
-                            <div class="grid grid-cols-3 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div class="labeled-input">
                                     <label for="responsibleEmail" class="label">Email</label>
                                     <input type="email" id="responsibleEmail" name="responsible_email" required
@@ -208,9 +183,8 @@
                         </div>
 
                         <!-- Botones alineados a la derecha -->
-                        <div class="flex justify-end mt-3">
-                            <button type="button" onclick="closeModal('createEventModal')"
-                                class="btn-gray">
+                        <div class="flex justify-end mt-6 space-x-4">
+                            <button type="button" onclick="closeModal('createEventModal')" class="btn-gray">
                                 Cancelar
                             </button>
                             <button type="submit" class="btn">
@@ -237,8 +211,7 @@
                         @method('DELETE')
                         <input type="hidden" id="deleteEventId" name="event_id">
                         <div class="flex justify-end">
-                            <button type="button" onclick="closeModal('deleteEventModal')"
-                                class="btn-gray">
+                            <button type="button" onclick="closeModal('deleteEventModal')" class="btn-gray">
                                 Cancelar
                             </button>
                             <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
@@ -251,9 +224,9 @@
         </div>
 
         <div id="startMatchingModal"
-            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-start justify-center pt-20 hidden mt-10">
+            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center p-4 hidden mt-10">
 
-            <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative">
                 <button onclick="closeModal('startMatchingModal')"
                     class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-xmark text-xl"></i>
@@ -267,27 +240,40 @@
                     @method('PATCH') <!-- Esto se usa para que Laravel lo reconozca como PATCH -->
                     <input type="hidden" id="startMatchingEventId" name="event_id">
 
-                    <label>Hora de inicio:</label>
-                    <input type="time" id="startsAt" name="starts_at" required class="border p-2 rounded mb-2 w-full">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="startsAt">Hora de inicio:</label>
+                            <input type="time" id="startsAt" name="starts_at" required
+                                class="border p-2 rounded mb-2 w-full">
+                        </div>
 
-                    <label>Hora de finalización:</label>
-                    <input type="time" id="endsAt" name="ends_at" required class="border p-2 rounded mb-2 w-full">
+                        <div>
+                            <label for="endsAt">Hora de finalización:</label>
+                            <input type="time" id="endsAt" name="ends_at" required class="border p-2 rounded mb-2 w-full">
+                        </div>
 
-                    <label>Número de reuniones por usuario:</label>
-                    <input type="number" id="meetingsPerUser" name="meetings_per_user" required
-                        class="border p-2 rounded mb-2 w-full">
+                        <div>
+                            <label for="meetingsPerUser">Número de reuniones por usuario:</label>
+                            <input type="number" id="meetingsPerUser" name="meetings_per_user" required
+                                class="border p-2 rounded mb-2 w-full">
+                        </div>
 
-                    <label>Duración de reuniones (minutos):</label>
-                    <input type="number" id="meetingDuration" name="meeting_duration" required
-                        class="border p-2 rounded mb-2 w-full">
+                        <div>
+                            <label for="meetingDuration">Duración de reuniones (minutos):</label>
+                            <input type="number" id="meetingDuration" name="meeting_duration" required
+                                class="border p-2 rounded mb-2 w-full">
+                        </div>
 
-                    <label>Tiempo de descanso entre reuniones (minutos):</label>
-                    <input type="number" id="timeBetweenMeetings" name="time_between_meetings" required
-                        class="border p-2 rounded mb-2 w-full">
+                        <div>
+                            <label for="timeBetweenMeetings">Tiempo de descanso entre reuniones (minutos):</label>
+                            <input type="number" id="timeBetweenMeetings" name="time_between_meetings" required
+                                class="border p-2 rounded mb-2 w-full">
+                        </div>
+                    </div>
 
-                    <div class="flex justify-end">
-                        <button type="button" onclick="closeModal('startMatchingModal')"
-                            class="btn-gray">
+                    <!-- Botones alineados a la derecha -->
+                    <div class="flex justify-end space-x-4 mt-6">
+                        <button type="button" onclick="closeModal('startMatchingModal')" class="btn-gray">
                             Cancelar
                         </button>
                         <button type="submit" class="btn">
@@ -299,9 +285,8 @@
         </div>
 
         <!-- Modal Confirmar Terminar Periodo de Matcheo -->
-        <div id="endMatchingModal"
-            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
-            <div class="bg-white p-6 rounded shadow-lg w-1/3 relative">
+        <div id="endMatchingModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg relative">
                 <button onclick="closeModal('endMatchingModal')"
                     class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
                     <i class="fa-solid fa-xmark text-xl"></i>
@@ -326,8 +311,6 @@
         </div>
 
     </main>
-
-    <!-- Scripts -->
     <script>
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
@@ -388,8 +371,5 @@
             });
         });
 
-
     </script>
-</body>
-
-</html>
+@endsection

@@ -97,30 +97,14 @@ class UserController extends Controller
         ]);
     }
 
-    public function isRegistered($slug)
-    {
-        $isRegistered = $this->repository->isRegistered($slug);
-
-        if ($isRegistered) {
-            return response()->json(
-                [
-                    'registered' => 'true',
-                    'registration' => $isRegistered,
-                ]
-            );
-        }
-
-        return response()->json(['registered' => false]);
-    }
-
     public function destroy($id)
     {
         $isDeleted = $this->repository->destroy($id);
 
         if (!$isDeleted) {
-            return response()->json(['message' => 'User could not be deleted'], 404);
+            return response()->json(['message' => 'El usuario no pudo ser eliminado.'], 404);
         }
 
-        return response()->json(['message' => 'User deleted successfully'], 200);
+        return response()->json(['message' => 'El usuario fue eliminado exitosamente.'], 200);
     }
 }

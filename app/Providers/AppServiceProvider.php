@@ -7,6 +7,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginController;
 use App\Repositories\Interfaces\EventRepository;
 use App\Repositories\EventRepositoryImpl;
 use App\Repositories\Interfaces\MeetingRepository;
@@ -52,6 +53,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->when(UserController::class)
 			->needs(RegistrationRepository::class)
 			->give(RegistrationRepositoryImpl::class);
+
+        $this->app->when(LoginController::class)
+			->needs(RegistrationRepository::class)
+			->give(RegistrationRepositoryImpl::class);
+
+        $this->app->when(LoginController::class)
+			->needs(EventRepository::class)
+			->give(EventRepositoryImpl::class);
 
     }
 

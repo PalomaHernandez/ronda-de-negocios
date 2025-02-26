@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Actions\UploadImages;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreRegistrationRequest;
 use App\Models\Registration;
 use App\Repositories\Interfaces\RegistrationRepository;
 use App\Repositories\Interfaces\UserRepository;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Event;
 
@@ -41,7 +40,7 @@ class RegistrationController extends Controller
         return response()->json($registration);
     }
 
-    public function store($event_id)
+    public function store(StoreRegistrationRequest $request, $event_id)
     {
         $event = Event::find($event_id);
         $registeredCount = $event->registrations()->count();
@@ -50,19 +49,13 @@ class RegistrationController extends Controller
             return response()->json(['message' => 'El evento ya alcanzó el límite de participantes.'], 403);
         }
 
-        $validatedData = request()->validate([
-            'interests' => 'nullable|string',
-            'products_services' => 'nullable|string',
-            'remaining_meetings' => 'nullable|integer',
-            'gallery' => 'nullable|array',
-            'gallery.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        $validatedData = $request->validated();
 
         $user = Auth::user();
         $validatedData['participant_id'] = $user->id;
         $validatedData['event_id'] = $event_id;
 
-        $this->repository->create($validatedData);
+        $registration = $this->repository->create($validatedData);
 
         $deleted_images = request()->input('deleted_files', []);
         if($deleted_images){
@@ -70,20 +63,23 @@ class RegistrationController extends Controller
         }
         
         if(request()->hasFile(key: 'gallery')){
-            Log::info('Subiendo imagenes');
             UploadImages::execute($user instanceof \App\Models\User ? $user : null, 'gallery');
         }
-
-        return response()->json("Inscripcion exitosa", 201);
+        if($registration){
+            return response()->json(
+                [
+                    'message' => "Inscripción exitosa",
+                    'registered' => 'true',
+                    'registration' => $registration,
+                ]
+            );
+        }
+        return response()->json(['registered' => false]);
     }
 
-    public function update(Request $request, $eventId, $user_id)
+    public function update(StoreRegistrationRequest $request, $eventId, $user_id)
     {
-        $validatedData = $request->validate([
-            'interests' => 'nullable|string',
-            'products_services' => 'nullable|string',
-            'remaining_meetings' => 'nullable|integer',
-        ]);
+        $validatedData = $request->validated();
 
         $registration = Registration::where('participant_id', $user_id)
                             ->where('event_id', $eventId)

@@ -12,6 +12,7 @@ interface RegistrationRepository
     public function getRegistrationsByEvent(int $event_id):Collection|array;
     public function create(array $data):Registration|Model;
     public function getById(int $id):Registration|Model;
+	public function userRegistration(string $slug): Registration|null;
     public function updateRegistration(int $id, array $data):Registration|Model;
     public function deleteRegistration(int $event_id, int $user_id): bool;
     public function getNotifications(int $event_id, int $user_id): Collection;

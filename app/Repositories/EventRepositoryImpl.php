@@ -79,8 +79,11 @@ class EventRepositoryImpl implements EventRepository
         $this->getById($id)->delete();
     }
 
-    public function addFileToEvent(int $event_id, array $fileData): void{}
-    public function getFilesByEvent(int $event_id): void{}
+    public function isResponsible($user_id, $event_slug): bool
+    {
+        $event = $this->getByName($event_slug);
 
-    public function deleteFileFromEvent(int $event_id): void{}
+        return $event && $event->responsible_id === $user_id;
+    }
+
 }
