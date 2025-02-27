@@ -16,6 +16,7 @@ class ScheduleController extends Controller
             ->orderBy('time')
             ->get();
 
+        $event = Event::find($eventId); 
         foreach ($meetings as $meeting) {
     
             $requester = User::find($meeting->requester_id);
@@ -31,7 +32,7 @@ class ScheduleController extends Controller
             $meeting->receiver_name = $receiverName;
         }
 
-        $pdf = PDF::loadView('schedules.generalSchedule', compact('meetings', 'eventId'));
+        $pdf = PDF::loadView('schedules.generalSchedule', compact('meetings', 'event'));
         
         if (request()->expectsJson()) {
             return $pdf->download('cronograma_general.pdf');
