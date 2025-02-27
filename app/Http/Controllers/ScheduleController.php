@@ -32,7 +32,10 @@ class ScheduleController extends Controller
         }
 
         $pdf = PDF::loadView('schedules.generalSchedule', compact('meetings', 'eventId'));
-
+        
+        if (request()->expectsJson()) {
+            return $pdf->download('cronograma_general.pdf');
+        }
         
         return $pdf->stream('cronograma.pdf');
     }

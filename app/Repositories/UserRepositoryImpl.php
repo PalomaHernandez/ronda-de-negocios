@@ -93,15 +93,6 @@ class UserRepositoryImpl implements UserRepository
 		]);
 	}
 
-	public function isRegistered(string $slug): Registration|null{
-		$event_id = Event::where('slug', $slug)->first()->id;
-
-        $user = Auth::user();
-
-        return Registration::where('participant_id', $user->id)
-            ->where('event_id', $event_id)->first();
-	}
-
 	public function update(User $user, array $validatedData): void
 	{
 		$user->update($validatedData);

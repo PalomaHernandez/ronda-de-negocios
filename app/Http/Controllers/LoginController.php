@@ -41,13 +41,15 @@ class LoginController extends Controller
 
 			if($role->contains('responsible')){
 				$isResponsible = $this->eventRepository->isResponsible($user->id,$event_slug);
-			} else {
+			} 
+			
+			if(!$isResponsible){
 				$registration = $this->registrationRepository->userRegistration($event_slug);
 				if ($registration) {
 					$isRegistered = true;
 				}
 			}
-
+		
 			return response()->json([
 				'user' => $user,
 				'token' => $token,
