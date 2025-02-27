@@ -8,23 +8,21 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Mail\Mailables\Attachment;
 
-class IndividualScheduleMail extends Mailable
+class EventStatusMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $schedule;
-    public $participant_name;
+    public $msg;
+
     public $event;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($schedule, $participant_name, $event)
+    public function __construct($msg, $event)
     {
-        $this->schedule = $schedule;
-        $this->participant_name = $participant_name;
+        $this->msg = $msg;
         $this->event = $event;
     }
 
@@ -34,7 +32,7 @@ class IndividualScheduleMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Tu cronograma de reuniones',
+            subject: 'Notificación sobre estado de evento',
         );
     }
 
@@ -44,9 +42,9 @@ class IndividualScheduleMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.individual_schedule',
+            view: 'emails.event_status',
             with: [
-                'participant_name' => $this->participant_name,
+                'msg' => $this->msg,
                 'event' => $this->event,
             ],
         );
@@ -59,9 +57,6 @@ class IndividualScheduleMail extends Mailable
      */
     public function attachments(): array
     {
-        return [
-            Attachment::fromData(fn () => $this->schedule, 'cronograma.pdf')
-                ->withMime('application/pdf'),
-        ];
+        return [];
     }
 }

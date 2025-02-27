@@ -7,8 +7,7 @@
 @section('content')
     <main class="mt-28 w-full p-4">
         @if ($errors->any())
-            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
-                class="alert alert-error">
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="alert alert-error">
                 <strong>Hubo algunos errores:</strong>
                 <ul class="mt-2">
                     @foreach ($errors->all() as $error)
@@ -32,8 +31,7 @@
         @endif
 
         @if (session('error'))
-            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
-                class="alert alert-error">
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="alert alert-error">
                 {{ session('error') }}
                 <button @click="show = false" class="absolute top-2 right-2 text-white">
                     <i class="fa-solid fa-xmark"></i>
@@ -44,29 +42,29 @@
 
 
         <!-- Tabla de eventos -->
-        <div class="bg-white shadow-md my-6 w-full">
-            <table class="table-auto border-gray-300 overflow-y-auto w-full">
+        <div class="bg-white shadow-md my-6 w-full rounded-lg overflow-hidden overflow-x-auto">
+            <table class="table-auto border-gray-300 w-full rounded-lg">
                 <thead>
-                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm font-mono">
+                    <tr class="bg-gray-200 text-gray-600 uppercase text-base font-sans rounded-t-lg">
                         <th class="py-3 px-6 text-center">Nombre del Evento</th>
                         <th class="py-3 px-6 text-center">Fecha</th>
                         <th class="py-3 px-6 text-center">Estado</th>
                         <th class="py-3 px-6 text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="text-gray-600 bg-white text-sm font-light">
+                <tbody class="text-gray-600 bg-white text-sm font-light rounded-b-lg">
                     @foreach ($events as $event)
-                        <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <tr class="border-b border-gray-200 hover:bg-gray-100 ">
                             <td class="py-3 px-6 text-center relative">{{ $event->title }}</td>
                             <td class="py-3 px-6 text-center relative">
                                 {{ \Carbon\Carbon::parse($event->date)->format('d-m-Y') }}
                             </td>
                             <td class="py-3 px-6 text-center relative">
                                 <span class="py-1 px-3 rounded-full text-xs
-                                                                        @if ($event->status->value === 'Inscripcion') bg-sky-600 text-white
-                                                                        @elseif ($event->status->value === 'Matcheo') bg-amber-600 text-white
-                                                                        @elseif ($event->status->value === 'Terminado') bg-emerald-600 text-white
-                                                                        @endif">
+                                        @if ($event->status->value === 'Inscripcion') bg-sky-600 text-white
+                                        @elseif ($event->status->value === 'Matcheo') bg-amber-600 text-white
+                                        @elseif ($event->status->value === 'Terminado') bg-emerald-600 text-white
+                                        @endif">
                                     {{ $event->status ?? 'N/A' }}
                                 </span>
                             </td>
@@ -79,7 +77,7 @@
 
                                 <!-- Menú desplegable -->
                                 <div x-show="open" x-transition
-                                    class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md z-20">
+                                    class="fixed right-4 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-md z-50">
                                     <ul class="py-1 text-gray-700">
                                         <li>
                                             <template x-if="'{{ $event->status }}' === 'Terminado'">
@@ -93,12 +91,12 @@
                                             <template x-if="'{{ $event->status }}' === 'Inscripcion'">
                                                 <button
                                                     onclick="startMatching(
-                                                                                    {{ $event->id }},
-                                                                                    '{{ $event->starts_at ?? 'null' }}',
-                                                                                    '{{ $event->ends_at ?? 'null' }}',
-                                                                                    '{{ $event->meeting_duration ?? 'null' }}',
-                                                                                    '{{ $event->time_between_meetings ?? 'null' }}')
-                                                                                    '{{ $event->meetings_per_user ?? 'null' }}'"
+                                                    {{ $event->id }},
+                                                    '{{ $event->starts_at ?? 'null' }}',
+                                                    '{{ $event->ends_at ?? 'null' }}',
+                                                    '{{ $event->meeting_duration ?? 'null' }}',
+                                                    '{{ $event->time_between_meetings ?? 'null' }}')
+                                                    '{{ $event->meetings_per_user ?? 'null' }}'"
                                                     class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center">
                                                     <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo
                                                 </button>
@@ -136,16 +134,16 @@
             </button>
         </div>
 
-        @include('modals.create-event');
-        @include('modals.delete-event');
-        @include('modals.start-matching');
-        @include('modals.end-matching');
+        @include('modals.create-event')
+        @include('modals.delete-event')
+        @include('modals.start-matching')
+        @include('modals.end-matching')
 
     </main>
     <script>
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
-            document.body.style.overflow = "hidden"; // Evita el scroll del body
+            document.body.style.overflow = "hidden";
         }
 
         function closeModal(modalId) {

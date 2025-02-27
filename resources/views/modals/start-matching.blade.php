@@ -46,7 +46,7 @@
             </div>
 
             <!-- Botones alineados a la derecha -->
-            <div class="flex justify-end space-x-4 mt-6">
+            <div class="flex justify-end mt-6">
                 <button type="button" onclick="closeModal('startMatchingModal')" class="btn-gray">
                     Cancelar
                 </button>

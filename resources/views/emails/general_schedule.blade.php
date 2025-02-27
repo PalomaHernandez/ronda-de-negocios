@@ -13,9 +13,9 @@
                 <p style="font-size: 16px; color: #555;">
                     Hola!
                 </p>
-                <p style="font-size: 16px; color: #555;"><strong>Adjunto encontrarás el cronograma general de reuniones para el evento. </strong></p>
+                <p style="font-size: 16px; color: #555;">Adjunto vas a encontrar el cronograma general de reuniones para el evento <strong>{{  $event->title }}</strong>.</p>
                 <p style="margin: 20px 0;">
-                    <a href="http://localhost:5174/{{ $event_name }}"
+                    <a href="https://rondas-uns.vercel.app/{{ $event->slug }}"
                        style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 16px;">
                         Ir a la página del evento
                     </a>

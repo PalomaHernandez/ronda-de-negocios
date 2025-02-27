@@ -10,27 +10,32 @@ use Carbon\Carbon;
 
 class ScheduleController extends Controller
 {
-    public function generalPDF($eventId)
-    {
+    private function getAllMeetingsData($eventId){
         $meetings = Meeting::where('event_id', $eventId)
-            ->orderBy('time')
-            ->get();
-
-        $event = Event::find($eventId); 
+        ->orderBy('time')
+        ->get();
+ 
         foreach ($meetings as $meeting) {
-    
+
             $requester = User::find($meeting->requester_id);
             $requesterName = $requester ? $requester->name : 'Desconocido';
 
-         
+        
             $receiver = User::find($meeting->receiver_id);
             $receiverName = $receiver ? $receiver->name : 'Desconocido';
             
             $meeting->formatted_time = Carbon::parse($meeting->time)->format('H:i');
-   
+
             $meeting->requester_name = $requesterName;
             $meeting->receiver_name = $receiverName;
         }
+
+        return $meetings;
+    }
+    public function generalPDF($eventId)
+    {
+        $meetings = $this->getAllMeetingsData($eventId);
+        $event = Event::find($eventId);
 
         $pdf = PDF::loadView('schedules.generalSchedule', compact('meetings', 'event'));
         
@@ -40,16 +45,20 @@ class ScheduleController extends Controller
         
         return $pdf->stream('cronograma.pdf');
     }
-    public function participantPDF($eventId, $userId)
+    public function emailGeneralPDF($eventId)
     {
-        $user = User::find($userId);
-        if (!$user) {
-            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        $meetings = $this->getAllMeetingsData($eventId);
+
+        $pdf = PDF::loadView('schedules.generalSchedule', compact('meetings', 'event'));
+        
+        if (request()->expectsJson()) {
+            return $pdf->download('cronograma_general.pdf');
         }
-        $userName = $user->name;
+        
+        return $pdf->output();
+    }
 
-        $event = Event::find($eventId);
-
+    private function getAllParticipantMeetingsData($eventId, $userId){
         $meetings = Meeting::where('event_id', $eventId)
             ->where(function ($query) use ($userId) {
                 $query->where('requester_id', $userId)
@@ -82,6 +91,20 @@ class ScheduleController extends Controller
                     $meeting->participant_role = 'Desconocido';
             }
         }
+        return $meetings;
+    }
+
+    public function participantPDF($eventId, $userId)
+    {
+        $user = User::find($userId);
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+        $userName = $user->name;
+
+        $event = Event::find($eventId);
+
+        $meetings = $this->getAllParticipantMeetingsData($eventId, $userId);
 
         $pdf = PDF::loadView('schedules.individualSchedule', compact('meetings', 'event', 'userName'));
 
@@ -90,6 +113,27 @@ class ScheduleController extends Controller
         }
 
         return $pdf->stream('cronograma_individual.pdf');
+    }
+
+    public function emailParticipantPDF($eventId, $userId)
+    {
+        $user = User::find($userId);
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+        $userName = $user->name;
+
+        $event = Event::find($eventId);
+
+        $meetings = $this->getAllParticipantMeetingsData($eventId, $userId);
+
+        $pdf = PDF::loadView('schedules.individualSchedule', compact('meetings', 'event', 'userName'));
+
+        if (request()->expectsJson()) {
+            return $pdf->download('cronograma_individual.pdf');
+        }
+
+        return $pdf->output();
     }
 
 }

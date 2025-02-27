@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Mail\CreatedEventMail;
+use App\Mail\EventStatusMail;
 use App\Models\Event;
 use App\Patterns\State\Event\EventStatus;
 use App\Patterns\State\Meeting\MeetingStatus;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Notification;
 use App\Mail\GeneralScheduleMail;
 use App\Mail\IndividualScheduleMail;
+use App\Mail\MeetingMail;
 
 class EventController extends Controller {
 
@@ -131,13 +133,12 @@ class EventController extends Controller {
         foreach ($registrations as $registration) {
             $registration->remaining_meetings=$validated['meetings_per_user'];
             $registration->save();
-            $message = "Ha comenzado la fase de coordinación de reuniones del evento";
+            $message = "Comenzó la fase de coordinación de reuniones del evento, ya podés enviar y recibir solicitudes de otros participantes.";
             Notification::createNotification($registration->id, $message);
-            //Mail::to($participant->email)->send(new MeetingMail($message, 'Pendiente', $event->slug));
-
+            //Mail::to($registration->participant->email)->send(new EventStatusMail($message, $event));
         }
 
-        return redirect()->route('home')->with('success', 'Fase de matching iniciada correctamente.');
+        return redirect()->route('home')->with('success', 'Fase de coordinación de reuniones iniciada correctamente.');
     }
 
     public function endMatchingPhase(int $eventId)
@@ -210,25 +211,30 @@ class EventController extends Controller {
 
         if(request()->expectsJson()){
             return response()->json([
-                'message' => 'Fase de matching terminada correctamente.',
+                'message' => 'Fase de coordinación de reuniones terminada correctamente.',
             ]);
         }
         
-        return redirect()->route('home')->with('success', 'Fase de matching terminada correctamente.');
+        return redirect()->route('home')->with('success', 'La fase de coordinación de reuniones ha terminado.');
     }
 
     private function sendResponsibleSchedule(Event $event){
-            $responsible = User::find($event->responsible_id);
+        $responsible = $event->responsible;
         
         if ($responsible) {
             $scheduleController = app(ScheduleController::class);
             $schedule = $scheduleController->generalPDF($event->id); 
-            //Mail::to($responsible->email)->send(new GeneralScheduleMail($schedule, $event->slug));
+            Mail::to($responsible->email)->send(new GeneralScheduleMail($schedule, $event));
         }
     }
 
     private function sendParticipantsSchedule(Event $event){
-        foreach ($event->participants() as $participant) {
+        foreach ($event->participants as $participant) {
+
+            if (!$participant) {
+                continue; 
+            }
+
             $participantMeetings = Meeting::where('event_id', $event->id)
                 ->where(function ($query) use ($participant) {
                     $query->where('requester_id', $participant->id)
@@ -237,9 +243,9 @@ class EventController extends Controller {
     
             if ($participantMeetings->isNotEmpty()) {
                 $scheduleController = app(ScheduleController::class);
-                $pdf = $scheduleController->participantPDF($event->id, $participant->id);
+                $pdf = $scheduleController->emailParticipantPDF($event->id, $participant->id);
     
-                //Mail::to($participant->email)->send(new IndividualScheduleMail($pdf, $participant->name, $event->slug));
+                Mail::to($participant->email)->send(new IndividualScheduleMail($pdf, $participant->name, $event));
             }
         }
     }

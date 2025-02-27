@@ -32,7 +32,7 @@ class CreatedEventMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Creacion de evento en Rondas uns',
+            subject: 'Creacion de evento en Rondas UNS',
         );
     }
 

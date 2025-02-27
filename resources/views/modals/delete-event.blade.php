@@ -14,7 +14,7 @@
                 <button type="button" onclick="closeModal('deleteEventModal')" class="btn-gray">
                     Cancelar
                 </button>
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                <button type="submit" class="btn-red">
                     Eliminar
                 </button>
             </div>

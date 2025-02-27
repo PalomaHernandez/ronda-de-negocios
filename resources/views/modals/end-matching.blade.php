@@ -12,7 +12,7 @@
             <input type="hidden" id="endMatchingEventId" name="event_id">
             <div class="flex justify-end">
                 <button type="button" onclick="closeModal('endMatchingModal')"
-                    class="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600">
+                    class="btn-gray">
                     Cancelar
                 </button>
                 <button type="submit" class="btn">

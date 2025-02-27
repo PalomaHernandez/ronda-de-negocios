@@ -27,7 +27,7 @@
                 </table>
 
                 <p style="margin: 20px 0;">
-                    <a href="http://localhost:5174/{{ $eventUrl }}"
+                    <a href="https://rondas-uns.vercel.app/{{ $eventUrl }}"
                        style="display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 16px;">
                         Ir a la página del evento
                     </a>

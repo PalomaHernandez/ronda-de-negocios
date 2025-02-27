@@ -16,15 +16,15 @@ class GeneralScheduleMail extends Mailable
 
     public $schedule;
 
-    public $event_name;
+    public $event;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($schedule, $event_name)
+    public function __construct($schedule, $event)
     {
         $this->schedule = $schedule;
-        $this->event_name = $event_name;
+        $this->event = $event;
     }
 
     /**
@@ -45,7 +45,7 @@ class GeneralScheduleMail extends Mailable
         return new Content(
             view: 'emails.general_schedule',
             with: [
-                'event_name' => $this->event_name,
+                'event_name' => $this->event,
             ],
         );
     }
