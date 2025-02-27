@@ -30,11 +30,9 @@
 <body>
 
     <h2>Cronograma de Reuniones - {{ $event->title }}</h2>
-    <h3>{{ \Carbon\Carbon::parse($event->date)->format('d-m-Y') }}  
-    {{ \Carbon\Carbon::parse($event->starts_at)->format('H:i') }} a 
-    {{ \Carbon\Carbon::parse($event->ends_at)->format('H:i') }} 
-    </h3>
-
+    <h3>Dia: {{ \Carbon\Carbon::parse($event->date)->format('d-m-Y') }}</h3>
+    <h3>Horario: {{ \Carbon\Carbon::parse($event->starts_at)->format('H:i') }} a {{ \Carbon\Carbon::parse($event->ends_at)->format('H:i') }}</h3>
+    <h3>Mesas necesarias: {{ $event->tables_needed }}</h3>
     <table>
         <thead>
             <tr>

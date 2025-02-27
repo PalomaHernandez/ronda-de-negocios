@@ -30,10 +30,8 @@
 <body>
 
     <h2>Cronograma - {{ $event->title }}</h2>
-    <h3>{{ \Carbon\Carbon::parse($event->date)->format('d-m-Y') }}  
-    {{ \Carbon\Carbon::parse($event->starts_at)->format('H:i') }} a 
-    {{ \Carbon\Carbon::parse($event->ends_at)->format('H:i') }} 
-    </h3>
+    <h3>Dia: {{ \Carbon\Carbon::parse($event->date)->format('d-m-Y') }}</h3>
+    <h3>Horario: {{ \Carbon\Carbon::parse($event->starts_at)->format('H:i') }} a {{ \Carbon\Carbon::parse($event->ends_at)->format('H:i') }}</h3>
     <h3>Participante: {{ $userName }}</h3>
 
 
@@ -58,7 +56,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="4">No hay reuniones para este participante.</td>
+                <td colspan="5">No hay reuniones para este participante.</td>
             </tr>
         @endforelse
     </tbody>
