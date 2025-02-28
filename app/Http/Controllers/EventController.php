@@ -30,6 +30,23 @@ class EventController extends Controller {
     public function index()
     {
         $events = $this->repository->getAll();
+        
+        if (request()->expectsJson()) {
+            $eventsData = $events->map(function ($event) {
+                return [
+                    'title' => $event->title,
+                    'slug' => $event->slug,
+                    'logo_url' => $event->logo_url,
+                    'description' => $event->description,
+                ];
+            });
+    
+            return response()->json([
+                'events' => $eventsData,
+            ]);
+        }
+    
+
         return view('home', compact('events'));
     }
 

@@ -14,7 +14,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('events')->group(function () {
         Route::patch('/{id}', [EventController::class, 'update']);
         Route::post('/{eventId}/end-matching', [EventController::class, 'endMatchingPhase']);
-        Route::get('/{id}/participants', [RegistrationController::class, 'getParticipantsByEvent']);
         Route::post('/{id}/registration', [RegistrationController::class, 'store']);
         Route::get('/{id}/participants', [RegistrationController::class, 'getParticipants']);
         Route::get('/{event_id}/meetings', [MeetingController::class, 'getMeetingsByEvent']);
@@ -36,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/update-registration/{eventId}/{user_id}', [RegistrationController::class, 'update']);
 });
 
+Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{slug}', [EventController::class, 'getEvent']);
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/register', [UserController::class, 'store']);
