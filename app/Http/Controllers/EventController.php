@@ -245,10 +245,15 @@ class EventController extends Controller {
         }
     }
 
-    private function sendParticipantsSchedule(Event $event){
-        foreach ($event->participants as $participant) {
+    private function notifyParticipants(Event $event){
+        foreach ($event->registrations as $registration) {
 
-            if (!$participant) {
+            $message = "Finalizó la fase de coordinación de reuniones del evento, tu cronograma de reuniones ya está disponible.";
+            Notification::createNotification($registration->id, $message);
+
+            $participant = $registration->participant;
+
+            if (!$registration->participant) {
                 continue; 
             }
 
@@ -262,7 +267,7 @@ class EventController extends Controller {
                 $scheduleController = app(ScheduleController::class);
                 $pdf = $scheduleController->emailParticipantPDF($event->id, $participant->id);
     
-                Mail::to($participant->email)->send(new IndividualScheduleMail($pdf, $participant->name, $event));
+                //Mail::to($participant->email)->send(new IndividualScheduleMail($pdf, $participant->name, $event));
             }
         }
     }
