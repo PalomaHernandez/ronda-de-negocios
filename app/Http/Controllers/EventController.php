@@ -224,7 +224,7 @@ class EventController extends Controller {
         $event->save();
 
         //$this->sendResponsibleSchedule($event);
-        //$this->sendParticipantsSchedule($event);
+        $this->notifyParticipants($event);
 
         if(request()->expectsJson()){
             return response()->json([
