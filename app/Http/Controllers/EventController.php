@@ -188,7 +188,9 @@ class EventController extends Controller {
             $AmmountOfMeetings = null;
         }
     
-        $meetings = Meeting::where('event_id', $eventId)->get();
+        $meetings = Meeting::where('event_id', $eventId)
+        ->where('status', 'Aceptada')
+        ->get();
         $meetingsToArray = $meetings->map(function ($meeting) {
             return [$meeting->requester_id, $meeting->receiver_id];
         })->toArray();

@@ -28,20 +28,17 @@
 
                 <div>
                     <label for="meetingsPerUser">Cantidad de reuniones por participante:</label>
-                    <input type="number" id="meetingsPerUser" name="meetings_per_user" required
-                        class="border p-2 rounded mb-2 w-full">
+                    <input type="number" id="meetingsPerUser" name="meetings_per_user" required class="border p-2 rounded mb-2 w-full">
                 </div>
 
                 <div>
                     <label for="meetingDuration">Duración de reuniones (en minutos):</label>
-                    <input type="number" id="meetingDuration" name="meeting_duration" required
-                        class="border p-2 rounded mb-2 w-full">
+                    <input type="number" id="meetingDuration" name="meeting_duration" required class="border p-2 rounded mb-2 w-full">
                 </div>
 
                 <div>
                     <label for="timeBetweenMeetings">Tiempo de descanso entre reuniones (en minutos):</label>
-                    <input type="number" id="timeBetweenMeetings" name="time_between_meetings" required
-                        class="border p-2 rounded mb-2 w-full">
+                    <input type="number" id="timeBetweenMeetings" name="time_between_meetings" required class="border p-2 rounded mb-2 w-full">
                 </div>
             </div>
 

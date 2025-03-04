@@ -9,7 +9,7 @@
     <table align="center" width="100%" style="max-width: 600px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);">
         <tr>
             <td>
-                <h2 style="color: #333;">Notificación de estado del evento <strong>{{ $event->title }}</strong></h2>
+                <h2 style="color: #333;">Notificación sobra la fase del evento <strong>{{ $event->title }}</strong></h2>
                 <p style="font-size: 16px; color: #555;">
                     Hola! <strong>{{ $msg }}</strong>.
                 </p>

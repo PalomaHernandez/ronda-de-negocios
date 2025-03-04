@@ -12,6 +12,7 @@ class ScheduleController extends Controller
 {
     private function getAllMeetingsData($eventId){
         $meetings = Meeting::where('event_id', $eventId)
+        ->where('status', 'Aceptada')
         ->orderBy('time')
         ->get();
  
@@ -60,6 +61,7 @@ class ScheduleController extends Controller
 
     private function getAllParticipantMeetingsData($eventId, $userId){
         $meetings = Meeting::where('event_id', $eventId)
+            ->where('status', 'Aceptada')
             ->where(function ($query) use ($userId) {
                 $query->where('requester_id', $userId)
                     ->orWhere('receiver_id', $userId);

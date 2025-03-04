@@ -98,11 +98,11 @@ class MeetingController extends Controller
         if (!$meeting) {
             return response()->json(['message' => 'Meeting not found'], 404);
         }
-
+        /*
         if (isset($validatedData['status']) && $previousStatus !== $validatedData['status']) {
             $this->notifyParticipants($meeting, $validatedData['status']->value);
         }
-
+        */
         return response()->json($meeting);
     }
 

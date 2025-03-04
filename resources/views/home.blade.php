@@ -48,7 +48,7 @@
                     <tr class="bg-gray-200 text-gray-600 uppercase text-base font-sans rounded-t-lg">
                         <th class="py-3 px-6 text-center">Nombre del Evento</th>
                         <th class="py-3 px-6 text-center">Fecha</th>
-                        <th class="py-3 px-6 text-center">Estado</th>
+                        <th class="py-3 px-6 text-center">Fase</th>
                         <th class="py-3 px-6 text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -95,8 +95,8 @@
                                                     '{{ $event->starts_at ?? 'null' }}',
                                                     '{{ $event->ends_at ?? 'null' }}',
                                                     '{{ $event->meeting_duration ?? 'null' }}',
-                                                    '{{ $event->time_between_meetings ?? 'null' }}')
-                                                    '{{ $event->meetings_per_user ?? 'null' }}'"
+                                                    '{{ $event->time_between_meetings ?? 'null' }}',
+                                                    '{{ $event->meetings_per_user ?? 'null' }}')"
                                                     class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center">
                                                     <i class="fa-solid fa-play mr-2"></i> Iniciar Matcheo
                                                 </button>
@@ -157,7 +157,7 @@
             openModal('deleteEventModal');
         }
 
-        function startMatching(eventId, startsAt, endsAt, meetingDuration, timeBetweenMeetings) {
+        function startMatching(eventId, startsAt, endsAt, meetingDuration, timeBetweenMeetings, meetingsPerUser) {
             // Asignar la acción del formulario
             document.getElementById('startMatchingForm').action = `/events/start-matching/${eventId}`;
 

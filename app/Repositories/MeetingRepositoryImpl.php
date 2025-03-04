@@ -73,7 +73,7 @@ class MeetingRepositoryImpl implements MeetingRepository
         if ($receiverRegistration) {
             $message = "La reunión con {$requester->name} ha sido cancelada";
             Notification::createNotification($receiverRegistration->id, $message);
-            Mail::to($receiver->email)->send(new MeetingMail($message, 'Cancelada', $event->slug));
+            //Mail::to($receiver->email)->send(new MeetingMail($message, 'Cancelada', $event->slug));
         }
 
         return $meeting->delete();

@@ -32,7 +32,7 @@ class EventStatusMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Notificación sobre estado de evento',
+            subject: 'Notificación sobre fase del evento',
         );
     }
 
